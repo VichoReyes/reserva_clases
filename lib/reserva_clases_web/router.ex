@@ -68,6 +68,14 @@ defmodule ReservaClasesWeb.Router do
       on_mount: [{ReservaClasesWeb.AdministratorAuth, :ensure_authenticated}] do
       live "/administrators/settings", AdministratorSettingsLive, :edit
       live "/administrators/settings/confirm_email/:token", AdministratorSettingsLive, :confirm_email
+
+      # administración de eventos
+      live "/events", EventLive.Index, :index
+      live "/events/new", EventLive.Index, :new
+      live "/events/:id/edit", EventLive.Index, :edit
+
+      live "/events/:id", EventLive.Show, :show
+      live "/events/:id/show/edit", EventLive.Show, :edit
     end
   end
 
