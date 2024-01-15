@@ -15,20 +15,21 @@ defmodule ReservaClasesWeb.EventLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
+    event = Classes.get_event!(id)
     socket
-    |> assign(:page_title, "Edit Event")
-    |> assign(:event, Classes.get_event!(id))
+    |> assign(:page_title, "Editar #{event.title}")
+    |> assign(:event, event)
   end
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "New Event")
+    |> assign(:page_title, "Nuevo evento")
     |> assign(:event, %Event{})
   end
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Events")
+    |> assign(:page_title, "Todos los eventos")
     |> assign(:event, nil)
   end
 

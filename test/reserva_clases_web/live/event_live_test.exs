@@ -50,7 +50,7 @@ defmodule ReservaClasesWeb.EventLiveTest do
       {:ok, index_live, _html} = live(conn, ~p"/events")
 
       assert index_live |> element("#events-#{event.id} a", "Edit") |> render_click() =~
-               "Edit Event"
+               "Editar #{event.title}"
 
       assert_patch(index_live, ~p"/events/#{event}/edit")
 
