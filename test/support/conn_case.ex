@@ -35,4 +35,30 @@ defmodule ReservaClasesWeb.ConnCase do
     ReservaClases.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
+
+  @doc """
+  Setup helper that registers and logs in administrators.
+
+      setup :register_and_log_in_administrator
+
+  It stores an updated connection and a registered administrator in the
+  test context.
+  """
+  def register_and_log_in_administrator(%{conn: conn}) do
+    administrator = ReservaClases.AccountsFixtures.administrator_fixture()
+    %{conn: log_in_administrator(conn, administrator), administrator: administrator}
+  end
+
+  @doc """
+  Logs the given `administrator` into the `conn`.
+
+  It returns an updated `conn`.
+  """
+  def log_in_administrator(conn, administrator) do
+    token = ReservaClases.Accounts.generate_administrator_session_token(administrator)
+
+    conn
+    |> Phoenix.ConnTest.init_test_session(%{})
+    |> Plug.Conn.put_session(:administrator_token, token)
+  end
 end
