@@ -7,6 +7,7 @@ defmodule ReservaClases.Classes.Event do
     field :title, :string
     field :starts_at, :naive_datetime
     field :total_vacancies, :integer
+    has_many :reservations, ReservaClases.Classes.Reservation
 
     timestamps()
   end

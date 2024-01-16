@@ -1,0 +1,34 @@
+<.header>
+  Listing Reservations
+</.header>
+
+<.table
+  id="reservations"
+  rows={@streams.reservations}
+>
+  <:col :let={{_id, reservation}} label="Full name"><%= reservation.full_name %></:col>
+  <:col :let={{_id, reservation}} label="Email"><%= reservation.email %></:col>
+  <:col :let={{_id, reservation}} label="Is member"><%= reservation.is_member %></:col>
+  <:action :let={{_id, reservation}}>
+    <.link patch={~p"/reservations/#{reservation}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, reservation}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: reservation.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action == :edit} id="reservation-modal" show on_cancel={JS.patch(~p"/reservations")}>
+  <.live_component
+    module={ReservaClasesWeb.ReservationLive.FormComponent}
+    id={@reservation.id || :new}
+    title={@page_title}
+    action={@live_action}
+    reservation={@reservation}
+    patch={~p"/reservations"}
+  />
+</.modal>

@@ -8,7 +8,7 @@ defmodule ReservaClases.ClassesTest do
 
     import ReservaClases.ClassesFixtures
 
-    @invalid_attrs %{description: nil, title: nil, starts_at: nil, total_vacancies: nil}
+    @invalid_attrs %{description: nil, title: nil, starts_at: nil, total_vacancies: nil, event_id: nil}
 
     test "list_events/0 returns all events" do
       event = event_fixture()
@@ -60,6 +60,68 @@ defmodule ReservaClases.ClassesTest do
     test "change_event/1 returns a event changeset" do
       event = event_fixture()
       assert %Ecto.Changeset{} = Classes.change_event(event)
+    end
+  end
+
+  describe "reservations" do
+    alias ReservaClases.Classes.Reservation
+
+    import ReservaClases.ClassesFixtures
+
+    @invalid_attrs %{is_member: nil, full_name: nil, email: nil}
+
+    test "list_reservations/0 returns all reservations" do
+      reservation = reservation_fixture()
+      assert Classes.list_reservations() == [reservation]
+    end
+
+    test "get_reservation!/1 returns the reservation with given id" do
+      reservation = reservation_fixture()
+      assert Classes.get_reservation!(reservation.id) == reservation
+    end
+
+    test "create_reservation/1 with valid data creates a reservation" do
+      event = event_fixture()
+      valid_attrs = %{is_member: true, full_name: "some full_name", email: "some@email.com", event_id: event.id}
+
+      assert {:ok, %Reservation{} = reservation} = Classes.create_reservation(valid_attrs)
+      assert reservation.is_member == true
+      assert reservation.full_name == "some full_name"
+      assert reservation.email == "some@email.com"
+      assert reservation.event_id == event.id
+    end
+
+    # TODO revisar que no se pueda crear una reserva con un event_id que no exista
+
+    test "create_reservation/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Classes.create_reservation(@invalid_attrs)
+    end
+
+    test "update_reservation/2 with valid data updates the reservation" do
+      reservation = reservation_fixture()
+      update_attrs = %{is_member: false, full_name: "some updated full_name", email: "some_updated@email"}
+
+      assert {:ok, %Reservation{} = reservation} = Classes.update_reservation(reservation, update_attrs)
+      assert reservation.is_member == false
+      assert reservation.full_name == "some updated full_name"
+      assert reservation.email == "some_updated@email"
+    end
+
+    test "update_reservation/2 with invalid data returns error changeset" do
+      reservation = reservation_fixture()
+      assert {:error, %Ecto.Changeset{}} = Classes.update_reservation(reservation, @invalid_attrs)
+      assert reservation == Classes.get_reservation!(reservation.id)
+    end
+
+    test "delete_reservation/1 deletes the reservation" do
+      reservation = reservation_fixture()
+      assert {:ok, %Reservation{}} = Classes.delete_reservation(reservation)
+      assert_raise Ecto.NoResultsError, fn -> Classes.get_reservation!(reservation.id) end
+    end
+
+    test "change_reservation/1 returns a reservation changeset" do
+      reservation = reservation_fixture()
+      assert %Ecto.Changeset{} = Classes.change_reservation(reservation)
     end
   end
 end

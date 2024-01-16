@@ -76,6 +76,9 @@ defmodule ReservaClasesWeb.Router do
 
       live "/events/:id", EventLive.Show, :show
       live "/events/:id/show/edit", EventLive.Show, :edit
+
+      live "/reservations", ReservationLive.Index, :index
+      live "/reservations/:id/edit", ReservationLive.Index, :edit
     end
   end
 

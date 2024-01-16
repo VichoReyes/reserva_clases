@@ -20,4 +20,21 @@ defmodule ReservaClases.ClassesFixtures do
 
     event
   end
+
+  @doc """
+  Generate a reservation.
+  """
+  def reservation_fixture(attrs \\ %{}) do
+    {:ok, reservation} =
+      attrs
+      |> Enum.into(%{
+        email: "some@email",
+        full_name: "some full_name",
+        is_member: true,
+        event_id: event_fixture().id,
+      })
+      |> ReservaClases.Classes.create_reservation()
+
+    reservation
+  end
 end
