@@ -83,7 +83,7 @@ defmodule ReservaClasesWeb.EventLiveTest do
     test "displays event", %{conn: conn, event: event} do
       {:ok, _show_live, html} = live(conn, ~p"/events/#{event}")
 
-      assert html =~ "Show Event"
+      assert html =~ event.title
       assert html =~ event.description
     end
 
@@ -91,7 +91,7 @@ defmodule ReservaClasesWeb.EventLiveTest do
       {:ok, show_live, _html} = live(conn, ~p"/events/#{event}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~
-               "Edit Event"
+               "Editando #{event.title}"
 
       assert_patch(show_live, ~p"/events/#{event}/show/edit")
 

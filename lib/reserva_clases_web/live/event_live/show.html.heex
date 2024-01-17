@@ -5,15 +5,54 @@
     <.link patch={~p"/events/#{@event}/show/edit"} phx-click={JS.push_focus()}>
       <.button>Edit event</.button>
     </.link>
+    <.link patch={~p"/events/#{@event}/new_reservation"} phx-click={JS.push_focus()}>
+      <.button>Agregar reserva</.button>
+    </.link>
   </:actions>
 </.header>
 
 <.list>
   <:item title="Title"><%= @event.title %></:item>
   <:item title="Starts at"><%= @event.starts_at %></:item>
-  <:item title="Description"><%= @event.description %></:item>
+  <:item title="Description">
+    <%= if @event.description do %>
+      <%= @event.description %>
+    <% else %>
+      <span class="text-gray-500">(Sin descripción)</span>
+    <% end %>
+  </:item>
   <:item title="Total vacancies"><%= @event.total_vacancies %></:item>
 </.list>
+
+<section class="bg-gray-200 p-4 rounded-md mt-10">
+<h2 class="font-bold">Reservas</h2>
+
+<.table
+  id="reservations"
+  rows={@event.reservations}
+>
+  <:col :let={reservation} label="Nombre"><%= reservation.full_name %></:col>
+  <:col :let={reservation} label="Correo"><%= reservation.email %></:col>
+  <:col :let={reservation} label="Declara ser socio">
+    <%= if reservation.is_member do %>
+      <.icon name="hero-check" class="text-green-500" />
+    <% else %>
+      <.icon name="hero-x-mark" class="text-red-500" />
+    <% end %>
+  </:col>
+  <:action :let={reservation}>
+    <.link patch={~p"/reservations/#{reservation}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={reservation}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: reservation.id}) |> hide("##{reservation.id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+</section>
 
 <.back navigate={~p"/events"}>Back to events</.back>
 
@@ -26,4 +65,16 @@
     event={@event}
     patch={~p"/events/#{@event}"}
   />
+</.modal>
+
+<.modal :if={@live_action == :new_reservation} id="reservation-modal" show on_cancel={JS.patch(~p"/events/#{@event}")}>
+  <.live_component
+    module={ReservaClasesWeb.ReservationLive.FormComponent}
+    id={:new}
+    title={@page_title}
+    action={@live_action}
+    reservation={@reservation}
+    patch={~p"/events/#{@event}"}
+    event_id={@event.id}
+/>
 </.modal>

@@ -504,6 +504,11 @@ defmodule ReservaClasesWeb.CoreComponents do
               </div>
             </td>
           </tr>
+          <tr :if={@rows == []} class="text-center">
+            <td colspan="100%" class="py-4 text-sm leading-6 text-zinc-700">
+              No hay registros
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>

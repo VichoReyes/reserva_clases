@@ -10,12 +10,17 @@ defmodule ReservaClasesWeb.EventLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
+    event = Classes.get_event!(id, [:reservations])
     {:noreply,
      socket
-     |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:event, Classes.get_event!(id))}
+     |> assign(:page_title, page_title(socket.assigns.live_action, event))
+     |> assign(:event, event)
+     |> assign(:reservation, %Classes.Reservation{event_id: event.id})}
   end
 
-  defp page_title(:show), do: "Show Event"
-  defp page_title(:edit), do: "Edit Event"
+  alias ReservaClases.Classes.Event
+
+  defp page_title(:show, %Event{title: title}), do: "#{title}"
+  defp page_title(:edit, %Event{title: title}), do: "Editando #{title}"
+  defp page_title(:new_reservation, %Event{title: title}), do: "Nueva reserva en #{title}"
 end

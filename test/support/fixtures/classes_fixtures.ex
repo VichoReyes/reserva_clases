@@ -31,9 +31,8 @@ defmodule ReservaClases.ClassesFixtures do
         email: "some@email",
         full_name: "some full_name",
         is_member: true,
-        event_id: event_fixture().id,
       })
-      |> ReservaClases.Classes.create_reservation()
+      |> ReservaClases.Classes.create_reservation(event_fixture().id)
 
     reservation
   end

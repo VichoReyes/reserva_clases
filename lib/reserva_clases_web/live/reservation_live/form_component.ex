@@ -41,6 +41,11 @@ defmodule ReservaClasesWeb.ReservationLive.FormComponent do
   end
 
   @impl true
+  def mount(socket) do
+    {:ok, assign(socket, :event_id, socket.assigns["event_id"])}
+  end
+
+  @impl true
   def handle_event("validate", %{"reservation" => reservation_params}, socket) do
     changeset =
       socket.assigns.reservation
@@ -69,8 +74,8 @@ defmodule ReservaClasesWeb.ReservationLive.FormComponent do
     end
   end
 
-  defp save_reservation(socket, :new, reservation_params) do
-    case Classes.create_reservation(reservation_params) do
+  defp save_reservation(socket, :new_reservation, reservation_params) do
+    case Classes.create_reservation(reservation_params, socket.assigns.event_id) do
       {:ok, reservation} ->
         notify_parent({:saved, reservation})
 

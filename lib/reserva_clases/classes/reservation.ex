@@ -14,8 +14,8 @@ defmodule ReservaClases.Classes.Reservation do
   @doc false
   def changeset(reservation, attrs) do
     reservation
-    |> cast(attrs, [:full_name, :email, :is_member, :event_id])
-    |> validate_required([:full_name, :email, :is_member, :event_id])
+    |> cast(attrs, [:full_name, :email, :is_member])
+    |> validate_required([:full_name, :email, :is_member])
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
     |> validate_length(:email, max: 160)
   end

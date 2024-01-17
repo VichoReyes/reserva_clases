@@ -4,7 +4,7 @@ defmodule ReservaClasesWeb.ReservationLiveTest do
   import Phoenix.LiveViewTest
   import ReservaClases.ClassesFixtures
 
-  # @create_attrs %{is_member: true, full_name: "some full_name", email: "some email"}
+  @create_attrs %{is_member: true, full_name: "some full_name", email: "some@samplemail.com"}
   @update_attrs %{is_member: false, full_name: "some updated full_name", email: "someupdated@email.com"}
   @invalid_attrs %{is_member: false, full_name: nil, email: nil}
 
@@ -25,28 +25,29 @@ defmodule ReservaClasesWeb.ReservationLiveTest do
 
     # No se puede crear una reserva sin un evento asociado
     # Pero se guarda este código para cuando la creación de reservas sea posible
-    # test "saves new reservation", %{conn: conn} do
-    #   {:ok, index_live, _html} = live(conn, ~p"/reservations")
+    test "saves new reservation", %{conn: conn} do
+      event = event_fixture()
+      {:ok, event_live, _html} = live(conn, ~p"/events/#{event.id}")
 
-    #   assert index_live |> element("a", "New Reservation") |> render_click() =~
-    #            "New Reservation"
+      assert event_live |> element("a", "Agregar reserva") |> render_click() =~
+               "Agregar reserva"
 
-    #   assert_patch(index_live, ~p"/reservations/new")
+      assert_patch(event_live, ~p"/events/#{event.id}/new_reservation")
 
-    #   assert index_live
-    #          |> form("#reservation-form", reservation: @invalid_attrs)
-    #          |> render_change() =~ "can&#39;t be blank"
+      assert event_live
+             |> form("#reservation-form", reservation: @invalid_attrs)
+             |> render_change() =~ "can&#39;t be blank"
 
-    #   assert index_live
-    #          |> form("#reservation-form", reservation: @create_attrs)
-    #          |> render_submit()
+      assert event_live
+             |> form("#reservation-form", reservation: @create_attrs)
+             |> render_submit()
 
-    #   assert_patch(index_live, ~p"/reservations")
+      assert_patch(event_live, ~p"/events/#{event.id}")
 
-    #   html = render(index_live)
-    #   assert html =~ "Reservation created successfully"
-    #   assert html =~ "some full_name"
-    # end
+      html = render(event_live)
+      assert html =~ "Reservation created successfully"
+      assert html =~ "some full_name"
+    end
 
     test "updates reservation in listing", %{conn: conn, reservation: reservation} do
       {:ok, index_live, _html} = live(conn, ~p"/reservations")

@@ -35,7 +35,11 @@ defmodule ReservaClases.Classes do
       ** (Ecto.NoResultsError)
 
   """
-  def get_event!(id), do: Repo.get!(Event, id)
+  def get_event!(id, preloads \\ []) do
+    Event
+    |> Repo.get!(id)
+    |> Repo.preload(preloads)
+  end
 
   @doc """
   Creates a event.
@@ -138,15 +142,15 @@ defmodule ReservaClases.Classes do
 
   ## Examples
 
-      iex> create_reservation(%{field: value})
+      iex> create_reservation(%{field: value}, event.id)
       {:ok, %Reservation{}}
 
-      iex> create_reservation(%{field: bad_value})
+      iex> create_reservation(%{field: bad_value}, event.id)
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_reservation(attrs \\ %{}) do
-    %Reservation{}
+  def create_reservation(attrs \\ %{}, event_id) do
+    %Reservation{event_id: event_id}
     |> Reservation.changeset(attrs)
     |> Repo.insert()
   end

@@ -8,7 +8,7 @@ defmodule ReservaClases.ClassesTest do
 
     import ReservaClases.ClassesFixtures
 
-    @invalid_attrs %{description: nil, title: nil, starts_at: nil, total_vacancies: nil, event_id: nil}
+    @invalid_attrs %{description: nil, title: nil, starts_at: nil, total_vacancies: nil}
 
     test "list_events/0 returns all events" do
       event = event_fixture()
@@ -80,11 +80,11 @@ defmodule ReservaClases.ClassesTest do
       assert Classes.get_reservation!(reservation.id) == reservation
     end
 
-    test "create_reservation/1 with valid data creates a reservation" do
+    test "create_reservation/2 with valid data creates a reservation" do
       event = event_fixture()
-      valid_attrs = %{is_member: true, full_name: "some full_name", email: "some@email.com", event_id: event.id}
+      valid_attrs = %{is_member: true, full_name: "some full_name", email: "some@email.com"}
 
-      assert {:ok, %Reservation{} = reservation} = Classes.create_reservation(valid_attrs)
+      assert {:ok, %Reservation{} = reservation} = Classes.create_reservation(valid_attrs, event.id)
       assert reservation.is_member == true
       assert reservation.full_name == "some full_name"
       assert reservation.email == "some@email.com"
@@ -93,8 +93,8 @@ defmodule ReservaClases.ClassesTest do
 
     # TODO revisar que no se pueda crear una reserva con un event_id que no exista
 
-    test "create_reservation/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Classes.create_reservation(@invalid_attrs)
+    test "create_reservation/2 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Classes.create_reservation(@invalid_attrs, nil)
     end
 
     test "update_reservation/2 with valid data updates the reservation" do
