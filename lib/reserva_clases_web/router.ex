@@ -18,9 +18,35 @@ defmodule ReservaClasesWeb.Router do
   end
 
   scope "/", ReservaClasesWeb do
+    pipe_through [:browser, :require_authenticated_administrator]
+
+    live_session :require_authenticated_administrator,
+      on_mount: [{ReservaClasesWeb.AdministratorAuth, :ensure_authenticated}] do
+      live "/administrators/settings", AdministratorSettingsLive, :edit
+      live "/administrators/settings/confirm_email/:token", AdministratorSettingsLive, :confirm_email
+
+      # administración de eventos
+      live "/events/new", EventLive.Index, :new
+      live "/events/:id/edit", EventLive.Index, :edit
+      live "/events/:id/show/edit", EventLive.Show, :edit
+
+      # live "/events/:id", EventLive.Show, :show
+      # live "/events/:id/new_reservation", EventLive.Show, :new_reservation
+
+      live "/reservations", ReservationLive.Index, :index
+      live "/reservations/:id/edit", ReservationLive.Index, :edit
+    end
+  end
+
+  scope "/", ReservaClasesWeb do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    # se pueden crear reservas sin ser administrador
+    live "/events", EventLive.Index, :index
+    live "/events/:id", EventLive.Show, :show
+    live "/events/:id/new_reservation", EventLive.Show, :new_reservation
   end
 
   # Other scopes may use custom stacks.
@@ -59,28 +85,6 @@ defmodule ReservaClasesWeb.Router do
     end
 
     post "/administrators/log_in", AdministratorSessionController, :create
-  end
-
-  scope "/", ReservaClasesWeb do
-    pipe_through [:browser, :require_authenticated_administrator]
-
-    live_session :require_authenticated_administrator,
-      on_mount: [{ReservaClasesWeb.AdministratorAuth, :ensure_authenticated}] do
-      live "/administrators/settings", AdministratorSettingsLive, :edit
-      live "/administrators/settings/confirm_email/:token", AdministratorSettingsLive, :confirm_email
-
-      # administración de eventos
-      live "/events", EventLive.Index, :index
-      live "/events/new", EventLive.Index, :new
-      live "/events/:id/edit", EventLive.Index, :edit
-
-      live "/events/:id", EventLive.Show, :show
-      live "/events/:id/show/edit", EventLive.Show, :edit
-      live "/events/:id/new_reservation", EventLive.Show, :new_reservation
-
-      live "/reservations", ReservationLive.Index, :index
-      live "/reservations/:id/edit", ReservationLive.Index, :edit
-    end
   end
 
   scope "/", ReservaClasesWeb do
