@@ -91,10 +91,21 @@ defmodule ReservaClases.ClassesTest do
       assert reservation.event_id == event.id
     end
 
-    # TODO revisar que no se pueda crear una reserva con un event_id que no exista
+    test "create_reservation/2 errors with invalid event_id" do
+      assert {:error, msg} = Classes.create_reservation(@invalid_attrs, 123456)
+      assert msg =~ "Clase inválida"
+    end
+
+    test "create_reservation/2 doesn't allow creating on full events" do
+      valid_attrs = %{description: "some description", title: "some title", starts_at: ~N[2024-01-14 21:16:00], total_vacancies: 42}
+      event = event_fixture(%{total_vacancies: 0})
+      assert {:error, msg} = Classes.create_reservation(valid_attrs, event.id)
+      assert is_binary(msg)
+    end
 
     test "create_reservation/2 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Classes.create_reservation(@invalid_attrs, nil)
+      event = event_fixture()
+      assert {:error, %Ecto.Changeset{}} = Classes.create_reservation(@invalid_attrs, event.id)
     end
 
     test "update_reservation/2 with valid data updates the reservation" do

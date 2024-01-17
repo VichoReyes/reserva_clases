@@ -86,6 +86,9 @@ defmodule ReservaClasesWeb.ReservationLive.FormComponent do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
+
+      {:error, msg} when is_binary(msg) ->
+        {:noreply, socket |> put_flash(:error, msg) |> push_patch(to: socket.assigns.patch)}
     end
   end
 
