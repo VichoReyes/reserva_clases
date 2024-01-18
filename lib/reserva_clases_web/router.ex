@@ -3,6 +3,12 @@ defmodule ReservaClasesWeb.Router do
 
   import ReservaClasesWeb.AdministratorAuth
 
+  defp allow_dav_iframe(conn, _opts) do
+    # permite embedear en un iframe desde el dominio del DAV
+    conn
+    |> Plug.Conn.put_resp_header("content-security-policy", "frame-ancestors 'self' http://192.168.100.7:8000/ https://dav.cl/")
+  end
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -10,6 +16,7 @@ defmodule ReservaClasesWeb.Router do
     plug :put_root_layout, html: {ReservaClasesWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :allow_dav_iframe  # TODO: move to a separate pipeline?
     plug :fetch_current_administrator
   end
 
