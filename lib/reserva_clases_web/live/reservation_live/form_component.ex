@@ -20,7 +20,7 @@ defmodule ReservaClasesWeb.ReservationLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:full_name]} type="text" label="Nombre completo" />
-        <.input field={@form[:email]} type="text" label="Email" />
+        <.input field={@form[:email]} type="email" label="Email" />
         <.input field={@form[:is_member]} type="checkbox" label="Declara ser socio" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Reservation</.button>
