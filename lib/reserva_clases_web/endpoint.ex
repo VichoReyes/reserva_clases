@@ -8,7 +8,8 @@ defmodule ReservaClasesWeb.Endpoint do
     store: :cookie,
     key: "_reserva_clases_key",
     signing_salt: "6CZsUjig",
-    same_site: "Lax"
+    same_site: "None",
+    secure: true,
   ]
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
