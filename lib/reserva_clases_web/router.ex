@@ -6,7 +6,7 @@ defmodule ReservaClasesWeb.Router do
   defp allow_dav_iframe(conn, _opts) do
     # permite embedear en un iframe desde el dominio del DAV
     conn
-    |> Plug.Conn.put_resp_header("content-security-policy", "frame-ancestors 'self' http://192.168.100.7:8000/ https://dav.cl/")
+    |> Plug.Conn.put_resp_header("content-security-policy", "frame-ancestors 'self' https://vichoreyes.cl/ https://dav.cl/")
   end
 
   pipeline :browser do
