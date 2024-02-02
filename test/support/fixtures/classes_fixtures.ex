@@ -8,11 +8,12 @@ defmodule ReservaClases.ClassesFixtures do
   Generate a event.
   """
   def event_fixture(attrs \\ %{}) do
+    start_time = DateTime.now!("America/Santiago") |> DateTime.to_naive()
     {:ok, event} =
       attrs
       |> Enum.into(%{
         description: "some description",
-        starts_at: ~N[2024-01-14 21:16:00],
+        starts_at: start_time,
         title: "some title",
         total_vacancies: 42
       })

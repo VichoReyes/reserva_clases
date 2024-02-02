@@ -9,16 +9,27 @@ defmodule ReservaClases.Classes do
   alias ReservaClases.Classes.Event
 
   @doc """
-  Returns the list of events.
+  Returns a map of lists of events belonging to a week.
+  The week is chosen by an offset from the current week
 
   ## Examples
 
       iex> list_events()
-      [%Event{}, ...]
+      %{1: [%Event{}, ...], 3: [%Event{}]}  # 1 means monday, 3 means wednesday, 7 means sunday
 
   """
-  def list_events do
-    Repo.all(Event)
+  def list_events(weeks_from_today \\ 0) do
+    monday = DateTime.now!("America/Santiago")
+    |> DateTime.to_date()
+    |> Date.add(weeks_from_today * 7)
+    |> Date.beginning_of_week()
+    sunday = Date.add(monday, 6)
+    # datetimes in DB are naive, referring to santiago time
+    monday_start = NaiveDateTime.new!(monday, ~T[00:00:00])
+    sunday_end = NaiveDateTime.new!(sunday, ~T[23:59:59])
+    from(e in Event, where: e.starts_at >= ^monday_start and e.starts_at <= ^sunday_end)
+    |> Repo.all()
+    |> Enum.group_by(fn e -> Date.day_of_week(e.starts_at) end)
   end
 
   @doc """

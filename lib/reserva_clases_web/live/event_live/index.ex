@@ -6,7 +6,7 @@ defmodule ReservaClasesWeb.EventLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :events, Classes.list_events())}
+    {:ok, assign(socket, :events, Classes.list_events())}
   end
 
   @impl true
@@ -34,8 +34,8 @@ defmodule ReservaClasesWeb.EventLive.Index do
   end
 
   @impl true
-  def handle_info({ReservaClasesWeb.EventLive.FormComponent, {:saved, event}}, socket) do
-    {:noreply, stream_insert(socket, :events, event)}
+  def handle_info({ReservaClasesWeb.EventLive.FormComponent, {:saved, _event}}, socket) do
+    {:noreply, assign(socket, :events, Classes.list_events())}
   end
 
   @impl true
@@ -43,6 +43,6 @@ defmodule ReservaClasesWeb.EventLive.Index do
     event = Classes.get_event!(id)
     {:ok, _} = Classes.delete_event(event)
 
-    {:noreply, stream_delete(socket, :events, event)}
+    {:noreply, assign(socket, :events, Classes.list_events())}
   end
 end

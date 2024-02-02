@@ -4,8 +4,9 @@ defmodule ReservaClasesWeb.EventLiveTest do
   import Phoenix.LiveViewTest
   import ReservaClases.ClassesFixtures
 
-  @create_attrs %{description: "some description", title: "some title", starts_at: "2024-01-14T21:16:00", total_vacancies: 42}
-  @update_attrs %{description: "some updated description", title: "some updated title", starts_at: "2024-01-15T21:16:00", total_vacancies: 43}
+  @now_in_santiago DateTime.now!("America/Santiago") |> DateTime.to_naive()
+  @create_attrs %{description: "some new description", title: "some title", starts_at: @now_in_santiago, total_vacancies: 42}
+  @update_attrs %{description: "some updated description", title: "some updated title", starts_at: @now_in_santiago, total_vacancies: 43}
   @invalid_attrs %{description: nil, title: nil, starts_at: nil, total_vacancies: nil}
 
   defp create_event(_) do
@@ -43,7 +44,7 @@ defmodule ReservaClasesWeb.EventLiveTest do
 
       html = render(index_live)
       assert html =~ "Event created successfully"
-      assert html =~ "some description"
+      assert html =~ "some new description"
     end
 
     test "updates event in listing", %{conn: conn, event: event} do

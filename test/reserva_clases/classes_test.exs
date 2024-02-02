@@ -10,9 +10,12 @@ defmodule ReservaClases.ClassesTest do
 
     @invalid_attrs %{description: nil, title: nil, starts_at: nil, total_vacancies: nil}
 
-    test "list_events/0 returns all events" do
+    test "list_events/0 returns events of week" do
       event = event_fixture()
-      assert Classes.list_events() == [event]
+      _past_event = event_fixture(starts_at: ~N[2010-01-01T10:00:00])
+      events = Classes.list_events()
+      |> Map.values()
+      assert events == [[event]]
     end
 
     test "get_event!/1 returns the event with given id" do

@@ -7,30 +7,35 @@
   </:actions>
 </.header>
 
+<div id="for-debug">
+<%= for {day, events} <- @events do %>
 <.table
-  id="events"
-  rows={@streams.events}
-  row_click={fn {_id, event} -> JS.navigate(~p"/events/#{event}") end}
+  id={"events-day-#{day}"}
+  rows={events}
+  row_click={fn event -> JS.navigate(~p"/events/#{event}") end}
+  row_id={fn event -> "events-#{event.id}" end}
 >
-  <:col :let={{_id, event}} label="Title"><%= event.title %></:col>
-  <:col :let={{_id, event}} label="Starts at"><%= event.starts_at %></:col>
-  <:col :let={{_id, event}} label="Description"><%= event.description %></:col>
-  <:col :let={{_id, event}} label="Total vacancies"><%= event.total_vacancies %></:col>
-  <:action :let={{_id, event}}>
+  <:col :let={event} label="Title"><%= event.title %></:col>
+  <:col :let={event} label="Starts at"><%= event.starts_at %></:col>
+  <:col :let={event} label="Description"><%= event.description %></:col>
+  <:col :let={event} label="Total vacancies"><%= event.total_vacancies %></:col>
+  <:action :let={event}>
     <div class="sr-only">
       <.link navigate={~p"/events/#{event}"}>Show</.link>
     </div>
     <.link patch={~p"/events/#{event}/edit"}>Edit</.link>
   </:action>
-  <:action :let={{id, event}}>
+  <:action :let={event}>
     <.link
-      phx-click={JS.push("delete", value: %{id: event.id}) |> hide("##{id}")}
+      phx-click={JS.push("delete", value: %{id: event.id}) |> hide("##{event.id}")}
       data-confirm="Are you sure?"
     >
       Delete
     </.link>
   </:action>
 </.table>
+<% end %>
+</div>
 
 <.modal :if={@live_action in [:new, :edit]} id="event-modal" show on_cancel={JS.patch(~p"/events")}>
   <.live_component
