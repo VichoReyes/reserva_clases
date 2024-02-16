@@ -13,20 +13,32 @@ defmodule ReservaClasesWeb.EventLive.Index do
       4 => "Jueves",
       5 => "Viernes",
       6 => "Sábado",
-      7 => "Domingo",
+      7 => "Domingo"
     }
-    {:ok, socket
-      |> assign(:events, Classes.list_events())
-      |> assign(:days_of_week, days_of_week)}
+
+    {:ok,
+     socket
+     |> assign(:days_of_week, days_of_week)}
   end
 
   @impl true
   def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+    {:noreply,
+     socket |> apply_action(socket.assigns.live_action, params) |> put_week_events(params)}
+  end
+
+  defp put_week_events(socket, params) do
+    week_offset = Map.get(params, "week", "0")
+    week_offset = String.to_integer(week_offset)
+
+    socket
+    |> assign(:events, Classes.list_events(week_offset))
+    |> assign(:week_offset, week_offset)
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     event = Classes.get_event!(id)
+
     socket
     |> assign(:page_title, "Editar #{event.title}")
     |> assign(:event, event)

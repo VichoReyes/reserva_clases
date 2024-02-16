@@ -20,8 +20,15 @@ defmodule ReservaClasesWeb.EventLiveTest do
     test "lists all events", %{conn: conn, event: event} do
       {:ok, _index_live, html} = live(conn, ~p"/events")
 
-      assert html =~ "Listing Events"
       assert html =~ event.title
+    end
+
+    test "adapts title", %{conn: conn} do
+      {:ok, _index_live, html} = live(conn, ~p"/events")
+      assert html =~ "Clases de esta semana"
+
+      {:ok, _index_live, html} = live(conn, ~p"/events?week=1")
+      assert html =~ "Clases de la próxima semana"
     end
 
     test "saves new event", %{conn: conn} do

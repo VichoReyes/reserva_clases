@@ -1,5 +1,22 @@
 <.header>
-  Listing Events
+  <.link patch={~p"/events?week=#{@week_offset - 1}"}>
+    <.icon name="hero-chevron-left" />
+  </.link>
+  <%= cond do %>
+    <% @week_offset == 0 -> %>
+      Clases de esta semana
+    <% @week_offset == 1 -> %>
+      Clases de la próxima semana
+    <% @week_offset == -1 -> %>
+      Clases de la semana pasada
+    <% @week_offset < 0 -> %>
+      Clases de hace <%= abs(@week_offset) %> semanas
+    <% @week_offset > 0 -> %>
+      Clases de <%= @week_offset %> semanas en el futuro
+  <% end %>
+  <.link patch={~p"/events?week=#{@week_offset + 1}"}>
+    <.icon name="hero-chevron-right" />
+  </.link>
   <:actions>
     <.link patch={~p"/events/new"}>
       <.button>New Event</.button>
