@@ -6,7 +6,18 @@ defmodule ReservaClasesWeb.EventLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :events, Classes.list_events())}
+    days_of_week = %{
+      1 => "Lunes",
+      2 => "Martes",
+      3 => "Miércoles",
+      4 => "Jueves",
+      5 => "Viernes",
+      6 => "Sábado",
+      7 => "Domingo",
+    }
+    {:ok, socket
+      |> assign(:events, Classes.list_events())
+      |> assign(:days_of_week, days_of_week)}
   end
 
   @impl true

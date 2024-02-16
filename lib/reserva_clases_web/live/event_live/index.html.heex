@@ -7,37 +7,43 @@
   </:actions>
 </.header>
 
-<div id="for-debug">
-<%= for {day, events} <- @events do %>
-<.table
-  id={"events-day-#{day}"}
-  rows={events}
-  row_click={fn event -> JS.navigate(~p"/events/#{event}") end}
-  row_id={fn event -> "events-#{event.id}" end}
->
-  <:col :let={event} label="Title"><%= event.title %></:col>
-  <:col :let={event} label="Starts at"><%= event.starts_at %></:col>
-  <:col :let={event} label="Description"><%= event.description %></:col>
-  <:col :let={event} label="Total vacancies"><%= event.total_vacancies %></:col>
-  <:action :let={event}>
-    <div class="sr-only">
-      <.link navigate={~p"/events/#{event}"}>Show</.link>
+<div class="grid grid-cols-2 gap-4 pt-2">
+  <%= for {day, events} <- @events do %>
+    <div class="p-4 bg-slate-100 border rounded">
+      <h2 class="font-bold"><%= @days_of_week[day] %></h2>
+      <.table
+        id={"events-day-#{day}"}
+        rows={events}
+        row_click={fn event -> JS.navigate(~p"/events/#{event}") end}
+        row_id={fn event -> "events-#{event.id}" end}
+      >
+        <:col :let={event} label="Título"><%= event.title %></:col>
+        <:col :let={event} label="Hora"><%= NaiveDateTime.to_time(event.starts_at) %></:col>
+        <:action :let={event}>
+          <div class="sr-only">
+            <.link navigate={~p"/events/#{event}"}>Show</.link>
+          </div>
+          <.link patch={~p"/events/#{event}/edit"}>Edit</.link>
+        </:action>
+        <:action :let={event}>
+          <.link
+            phx-click={JS.push("delete", value: %{id: event.id}) |> hide("##{event.id}")}
+            data-confirm="Are you sure?"
+          >
+            Delete
+          </.link>
+        </:action>
+      </.table>
     </div>
-    <.link patch={~p"/events/#{event}/edit"}>Edit</.link>
-  </:action>
-  <:action :let={event}>
-    <.link
-      phx-click={JS.push("delete", value: %{id: event.id}) |> hide("##{event.id}")}
-      data-confirm="Are you sure?"
-    >
-      Delete
-    </.link>
-  </:action>
-</.table>
-<% end %>
+  <% end %>
 </div>
 
-<.modal :if={@live_action in [:new, :edit]} id="event-modal" show on_cancel={JS.patch(~p"/events")}>
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="event-modal"
+  show
+  on_cancel={JS.patch(~p"/events")}
+>
   <.live_component
     module={ReservaClasesWeb.EventLive.FormComponent}
     id={@event.id || :new}

@@ -5,7 +5,7 @@ defmodule ReservaClasesWeb.EventLiveTest do
   import ReservaClases.ClassesFixtures
 
   @now_in_santiago DateTime.now!("America/Santiago") |> DateTime.to_naive()
-  @create_attrs %{description: "some new description", title: "some title", starts_at: @now_in_santiago, total_vacancies: 42}
+  @create_attrs %{description: "some new description", title: "some new title", starts_at: @now_in_santiago, total_vacancies: 42}
   @update_attrs %{description: "some updated description", title: "some updated title", starts_at: @now_in_santiago, total_vacancies: 43}
   @invalid_attrs %{description: nil, title: nil, starts_at: nil, total_vacancies: nil}
 
@@ -21,7 +21,7 @@ defmodule ReservaClasesWeb.EventLiveTest do
       {:ok, _index_live, html} = live(conn, ~p"/events")
 
       assert html =~ "Listing Events"
-      assert html =~ event.description
+      assert html =~ event.title
     end
 
     test "saves new event", %{conn: conn} do
@@ -44,7 +44,7 @@ defmodule ReservaClasesWeb.EventLiveTest do
 
       html = render(index_live)
       assert html =~ "Event created successfully"
-      assert html =~ "some new description"
+      assert html =~ "some new title"
     end
 
     test "updates event in listing", %{conn: conn, event: event} do
@@ -67,7 +67,7 @@ defmodule ReservaClasesWeb.EventLiveTest do
 
       html = render(index_live)
       assert html =~ "Event updated successfully"
-      assert html =~ "some updated description"
+      assert html =~ "some updated title"
     end
 
     test "deletes event in listing", %{conn: conn, event: event} do
@@ -108,7 +108,7 @@ defmodule ReservaClasesWeb.EventLiveTest do
 
       html = render(show_live)
       assert html =~ "Event updated successfully"
-      assert html =~ "some updated description"
+      assert html =~ "some updated title"
     end
   end
 end

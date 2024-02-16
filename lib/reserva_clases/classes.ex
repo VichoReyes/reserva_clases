@@ -27,7 +27,9 @@ defmodule ReservaClases.Classes do
     # datetimes in DB are naive, referring to santiago time
     monday_start = NaiveDateTime.new!(monday, ~T[00:00:00])
     sunday_end = NaiveDateTime.new!(sunday, ~T[23:59:59])
-    from(e in Event, where: e.starts_at >= ^monday_start and e.starts_at <= ^sunday_end)
+    from(e in Event,
+      where: e.starts_at >= ^monday_start and e.starts_at <= ^sunday_end,
+      order_by: [asc: e.starts_at])
     |> Repo.all()
     |> Enum.group_by(fn e -> Date.day_of_week(e.starts_at) end)
   end
