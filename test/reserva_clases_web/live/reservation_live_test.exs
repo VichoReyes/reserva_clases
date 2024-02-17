@@ -29,8 +29,8 @@ defmodule ReservaClasesWeb.ReservationLiveTest do
       event = event_fixture()
       {:ok, event_live, _html} = live(conn, ~p"/events/#{event.id}")
 
-      assert event_live |> element("a", "Agregar reserva") |> render_click() =~
-               "Agregar reserva"
+      assert event_live |> element("a", "Reservar") |> render_click() =~
+               "Reservar"
 
       assert_patch(event_live, ~p"/events/#{event.id}/new_reservation")
 

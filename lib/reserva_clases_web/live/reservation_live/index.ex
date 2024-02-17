@@ -36,6 +36,9 @@ defmodule ReservaClasesWeb.ReservationLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
+    if !socket.assigns.current_administrator do
+      raise "Unauthorized"
+    end
     reservation = Classes.get_reservation!(id)
     {:ok, _} = Classes.delete_reservation(reservation)
 

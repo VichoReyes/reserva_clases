@@ -56,6 +56,7 @@ defmodule ReservaClasesWeb.ReservationLive.FormComponent do
   end
 
   def handle_event("save", %{"reservation" => reservation_params}, socket) do
+    # TODO: add captcha validation
     save_reservation(socket, socket.assigns.action, reservation_params)
   end
 
