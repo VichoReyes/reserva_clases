@@ -27,6 +27,8 @@ defmodule ReservaClasesWeb.Router do
   scope "/", ReservaClasesWeb do
     pipe_through [:browser, :require_authenticated_administrator]
 
+    get "/", PageController, :home
+
     live_session :only_admins,
       on_mount: [{ReservaClasesWeb.AdministratorAuth, :ensure_authenticated}] do
       live "/administrators/settings", AdministratorSettingsLive, :edit
@@ -39,8 +41,6 @@ defmodule ReservaClasesWeb.Router do
 
   scope "/", ReservaClasesWeb do
     pipe_through :browser
-
-    get "/", PageController, :home
 
     live_session :unauthenticated,
       on_mount: [{ReservaClasesWeb.AdministratorAuth, :mount_current_administrator}] do
