@@ -1,6 +1,7 @@
 defmodule ReservaClasesWeb.ReservationLiveTest do
   use ReservaClasesWeb.ConnCase
 
+  import Mox
   import Phoenix.LiveViewTest
   import ReservaClases.ClassesFixtures
 
@@ -26,6 +27,9 @@ defmodule ReservaClasesWeb.ReservationLiveTest do
     # No se puede crear una reserva sin un evento asociado
     # Pero se guarda este código para cuando la creación de reservas sea posible
     test "saves new reservation", %{conn: conn} do
+      stub(TurnstileMock, :refresh, fn socket -> socket end)
+      stub(TurnstileMock, :verify, fn _values -> {:ok, %{}} end)
+
       event = event_fixture()
       {:ok, event_live, _html} = live(conn, ~p"/events/#{event.id}")
 

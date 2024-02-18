@@ -51,7 +51,9 @@ defmodule ReservaClases.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:tz, "~> 0.26.5"}
+      {:tz, "~> 0.26.5"},
+      {:phoenix_turnstile, "~> 1.1"},
+      {:mox, "~> 1.1"},
     ]
   end
 

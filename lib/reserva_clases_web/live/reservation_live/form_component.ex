@@ -3,6 +3,8 @@ defmodule ReservaClasesWeb.ReservationLive.FormComponent do
 
   alias ReservaClases.Classes
 
+  @turnstile Application.compile_env(:phoenix_turnstile, :adapter, Turnstile)
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -22,6 +24,9 @@ defmodule ReservaClasesWeb.ReservationLive.FormComponent do
         <.input field={@form[:full_name]} type="text" label="Nombre completo" />
         <.input field={@form[:email]} type="email" label="Email" />
         <.input field={@form[:is_member]} type="checkbox" label="Declara ser socio" />
+        <%= if @action == :new_reservation do %>
+          <Turnstile.widget theme="light" />
+        <% end %>
         <:actions>
           <.button phx-disable-with="Saving...">Save Reservation</.button>
         </:actions>
@@ -55,12 +60,11 @@ defmodule ReservaClasesWeb.ReservationLive.FormComponent do
     {:noreply, assign_form(socket, changeset)}
   end
 
-  def handle_event("save", %{"reservation" => reservation_params}, socket) do
-    # TODO: add captcha validation
-    save_reservation(socket, socket.assigns.action, reservation_params)
+  def handle_event("save", params = %{"reservation" => _reservation_params}, socket) do
+    save_reservation(socket, socket.assigns.action, params)
   end
 
-  defp save_reservation(socket, :edit, reservation_params) do
+  defp save_reservation(socket, :edit, %{"reservation" => reservation_params}) do
     case Classes.update_reservation(socket.assigns.reservation, reservation_params) do
       {:ok, reservation} ->
         notify_parent({:saved, reservation})
@@ -75,7 +79,18 @@ defmodule ReservaClasesWeb.ReservationLive.FormComponent do
     end
   end
 
-  defp save_reservation(socket, :new_reservation, reservation_params) do
+  defp save_reservation(socket, :new_reservation, params = %{"reservation" => reservation_params}) do
+    case @turnstile.verify(params) do
+      {:ok, _} ->
+        save_new_reservation(socket, reservation_params)
+      {:error, _} ->
+        {:noreply, socket
+          |> put_flash(:error, "Error verificando que no eres un robot")
+          |> @turnstile.refresh()}
+    end
+  end
+
+  defp save_new_reservation(socket, reservation_params) do
     case Classes.create_reservation(reservation_params, socket.assigns.event_id) do
       {:ok, reservation} ->
         notify_parent({:saved, reservation})
