@@ -106,6 +106,12 @@ defmodule ReservaClases.ClassesTest do
       assert {:error, "Ya tienes una reserva para esta clase"} = Classes.create_reservation(@valid_attrs, event.id)
     end
 
+    test "create_reservation/2 doesn't allow reservations too far into the future" do
+      future_date = NaiveDateTime.utc_now() |> NaiveDateTime.add(30, :day)
+      event = event_fixture(%{starts_at: future_date})
+      assert {:error, "Todavía no se puede reservar para esta clase"} = Classes.create_reservation(@valid_attrs, event.id)
+    end
+
     test "create_reservation/2 with invalid data returns error changeset" do
       event = event_fixture()
       assert {:error, %Ecto.Changeset{}} = Classes.create_reservation(@invalid_attrs, event.id)

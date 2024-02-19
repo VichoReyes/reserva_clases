@@ -164,17 +164,37 @@ defmodule ReservaClases.Classes do
   """
   def create_reservation(attrs \\ %{}, event_id) do
     event = get_event!(event_id, [:reservations])
+    case event_accepts_reservations(event) do
+      {false, reason} -> {:error, reason}
+      {true, _} ->
+        if Enum.any?(event.reservations, & &1.email == attrs.email) do
+          {:error, "Ya tienes una reserva para esta clase"}
+        else
+          %Reservation{event_id: event_id}
+          |> Reservation.changeset(attrs)
+          |> Repo.insert()
+        end
+    end
+  end
+
+  @doc """
+  Returns {true, nil} if the event accepts reservations.
+  returns {false, reason} otherwise.
+  """
+  def event_accepts_reservations(event) do
+    limit_date = DateTime.now!("America/Santiago")
+      |> DateTime.to_naive()
+      |> NaiveDateTime.add(8, :day)
+      |> NaiveDateTime.beginning_of_day()
     cond do
       event.total_vacancies == 0 ->
-        {:error, "Esta clase no acepta reservas por esta plataforma"}
+        {false, "Esta clase no acepta reservas por esta plataforma"}
+      NaiveDateTime.after?(event.starts_at, limit_date) ->
+        {false, "Todavía no se puede reservar para esta clase"}
       length(event.reservations) >= event.total_vacancies ->
-        {:error, "Esta clase ya está llena"}
-      Enum.any?(event.reservations, & &1.email == attrs.email) ->
-        {:error, "Ya tienes una reserva para esta clase"}
+        {false, "Esta clase ya está llena"}
       true ->
-        %Reservation{event_id: event_id}
-        |> Reservation.changeset(attrs)
-        |> Repo.insert()
+        {true, nil}
     end
   end
 
