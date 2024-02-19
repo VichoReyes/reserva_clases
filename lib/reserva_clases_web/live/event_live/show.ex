@@ -15,6 +15,7 @@ defmodule ReservaClasesWeb.EventLive.Show do
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action, event))
      |> assign(:event, event)
+     |> assign(:event_accepts_reservations, Classes.event_accepts_reservations(event))
      |> assign(:remaining_vacancies, event.total_vacancies - length(event.reservations))
      |> assign(:reservation, %Classes.Reservation{event_id: event.id})}
   end
