@@ -163,31 +163,21 @@ defmodule ReservaClases.Classes do
 
   """
   def create_reservation(attrs \\ %{}, event_id) do
-    case get_event_with_reservations_count(event_id) do
-      nil ->
-        {:error, "Clase inválida"}
-      %{event: %Event{total_vacancies: 0}} ->
+    event = get_event!(event_id, [:reservations])
+    cond do
+      event.total_vacancies == 0 ->
         {:error, "Esta clase no acepta reservas por esta plataforma"}
-      %{event: event, reservations_count: current_count} ->
-        if current_count >= event.total_vacancies do
-          {:error, "Esta clase ya está llena"}
-        else
-          %Reservation{event_id: event_id}
-          |> Reservation.changeset(attrs)
-          |> Repo.insert()
-        end
+      length(event.reservations) >= event.total_vacancies ->
+        {:error, "Esta clase ya está llena"}
+      Enum.any?(event.reservations, & &1.email == attrs.email) ->
+        {:error, "Ya tienes una reserva para esta clase"}
+      true ->
+        %Reservation{event_id: event_id}
+        |> Reservation.changeset(attrs)
+        |> Repo.insert()
     end
   end
 
-  def get_event_with_reservations_count(event_id) do
-    from(e in Event,
-      left_join: r in Reservation, on: r.event_id == e.id,
-      where: e.id == ^event_id,
-      select: %{event: e, reservations_count: count(r.id)},
-      group_by: e.id
-    )
-    |> Repo.one()
-  end
   @doc """
   Updates a reservation.
 

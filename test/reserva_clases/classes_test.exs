@@ -72,6 +72,7 @@ defmodule ReservaClases.ClassesTest do
     import ReservaClases.ClassesFixtures
 
     @invalid_attrs %{is_member: nil, full_name: nil, email: nil}
+    @valid_attrs %{is_member: true, full_name: "some full_name", email: "some@email.com"}
 
     test "list_reservations/0 returns all reservations" do
       reservation = reservation_fixture()
@@ -85,25 +86,24 @@ defmodule ReservaClases.ClassesTest do
 
     test "create_reservation/2 with valid data creates a reservation" do
       event = event_fixture()
-      valid_attrs = %{is_member: true, full_name: "some full_name", email: "some@email.com"}
 
-      assert {:ok, %Reservation{} = reservation} = Classes.create_reservation(valid_attrs, event.id)
+      assert {:ok, %Reservation{} = reservation} = Classes.create_reservation(@valid_attrs, event.id)
       assert reservation.is_member == true
       assert reservation.full_name == "some full_name"
       assert reservation.email == "some@email.com"
       assert reservation.event_id == event.id
     end
 
-    test "create_reservation/2 errors with invalid event_id" do
-      assert {:error, msg} = Classes.create_reservation(@invalid_attrs, 123456)
-      assert msg =~ "Clase inválida"
+    test "create_reservation/2 doesn't allow creating on full events" do
+      event = event_fixture(%{total_vacancies: 1})
+      assert {:ok, _} = Classes.create_reservation(@valid_attrs, event.id)
+      assert {:error, "Esta clase ya está llena"} = Classes.create_reservation(%{@valid_attrs | email: "other@email.com"}, event.id)
     end
 
-    test "create_reservation/2 doesn't allow creating on full events" do
-      valid_attrs = %{description: "some description", title: "some title", starts_at: ~N[2024-01-14 21:16:00], total_vacancies: 42}
-      event = event_fixture(%{total_vacancies: 0})
-      assert {:error, msg} = Classes.create_reservation(valid_attrs, event.id)
-      assert is_binary(msg)
+    test "create_reservation/2 doesn't allow two reservations with same email" do
+      event = event_fixture(%{total_vacancies: 5})
+      assert {:ok, _} = Classes.create_reservation(@valid_attrs, event.id)
+      assert {:error, "Ya tienes una reserva para esta clase"} = Classes.create_reservation(@valid_attrs, event.id)
     end
 
     test "create_reservation/2 with invalid data returns error changeset" do
