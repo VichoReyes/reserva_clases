@@ -21,10 +21,15 @@
       <span class="text-gray-500">(Sin descripción)</span>
     <% end %>
   </:item>
-  <:item title="Total vacancies"><%= @event.total_vacancies %></:item>
+  <:item title="Vacantes">
+    Quedan
+    <%= @remaining_vacancies %>
+    disponibles, de un total de
+    <%= @event.total_vacancies %>
+  </:item>
 </.list>
 
-<section class="bg-gray-200 p-4 rounded-md mt-10">
+<section :if={@current_administrator} class="bg-gray-200 p-4 rounded-md mt-10">
 <h2 class="font-bold">Reservas</h2>
 
 <.table
