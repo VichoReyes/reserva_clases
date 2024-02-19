@@ -28,9 +28,13 @@ defmodule ReservaClases.Classes do
     monday_start = NaiveDateTime.new!(monday, ~T[00:00:00])
     sunday_end = NaiveDateTime.new!(sunday, ~T[23:59:59])
     from(e in Event,
+      left_join: r in assoc(e, :reservations),
       where: e.starts_at >= ^monday_start and e.starts_at <= ^sunday_end,
+      group_by: e.id,
+      select: {e, count(r.id)},
       order_by: [asc: e.starts_at])
     |> Repo.all()
+    |> Enum.map(fn {e, count} -> Map.put(e, :reservations_count, count) end)
     |> Enum.group_by(fn e -> Date.day_of_week(e.starts_at) end)
   end
 

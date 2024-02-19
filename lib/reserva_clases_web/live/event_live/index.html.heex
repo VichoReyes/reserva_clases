@@ -41,6 +41,11 @@
       >
         <:col :let={event} label="Título"><%= event.title %></:col>
         <:col :let={event} label="Hora"><%= NaiveDateTime.to_time(event.starts_at) %></:col>
+        <:col :let={event} label="Vacantes">
+          <%= event.total_vacancies - event.reservations_count %>
+          libres de
+          <%= event.total_vacancies %>
+        </:col>
         <:action :let={event}>
           <div class="sr-only">
             <.link navigate={~p"/events/#{event}"}>Show</.link>
