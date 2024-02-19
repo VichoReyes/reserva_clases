@@ -14,12 +14,10 @@ defmodule ReservaClases.ClassesTest do
     test "list_events/0 returns events of week" do
       event = event_fixture()
       _past_event = event_fixture(starts_at: ~N[2010-01-01T10:00:00])
-
       events =
         Classes.list_events()
         |> Map.values()
-
-      assert events == [[event]]
+      assert events == [[Map.put(event, :reservations_count, 0)]]
     end
 
     test "get_event!/1 returns the event with given id" do

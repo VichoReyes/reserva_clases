@@ -24,7 +24,7 @@
   </:actions>
 </.header>
 
-<div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4 pt-2">
+<div class="grid lg:grid-cols-2 xl:grid-cols-3 gap-4 pt-2">
   <%= if @events == %{} do %>
     <div class="p-4 bg-slate-100 border rounded col-span-full">
       <p>Ningún día tiene clases</p>
@@ -41,6 +41,9 @@
       >
         <:col :let={event} label="Título"><%= event.title %></:col>
         <:col :let={event} label="Hora"><%= strftime(event.starts_at, "%I:%M%P") %></:col>
+        <:col :let={event} label="Cupos">
+          <%= event.total_vacancies - event.reservations_count %>
+        </:col>
         <:action :let={event}>
           <div class="sr-only">
             <.link navigate={~p"/events/#{event}"}>Ver</.link>
