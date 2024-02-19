@@ -87,7 +87,6 @@ defmodule ReservaClasesWeb.Router do
 
     live_session :redirect_if_administrator_is_authenticated,
       on_mount: [{ReservaClasesWeb.AdministratorAuth, :redirect_if_administrator_is_authenticated}] do
-      live "/administrators/register", AdministratorRegistrationLive, :new
       live "/administrators/log_in", AdministratorLoginLive, :new
       live "/administrators/reset_password", AdministratorForgotPasswordLive, :new
       live "/administrators/reset_password/:token", AdministratorResetPasswordLive, :edit
@@ -100,11 +99,5 @@ defmodule ReservaClasesWeb.Router do
     pipe_through [:browser]
 
     delete "/administrators/log_out", AdministratorSessionController, :delete
-
-    live_session :current_administrator,
-      on_mount: [{ReservaClasesWeb.AdministratorAuth, :mount_current_administrator}] do
-      live "/administrators/confirm/:token", AdministratorConfirmationLive, :edit
-      live "/administrators/confirm", AdministratorConfirmationInstructionsLive, :new
-    end
   end
 end

@@ -31,8 +31,7 @@ defmodule ReservaClasesWeb.AdministratorResetPasswordLive do
       </.simple_form>
 
       <p class="text-center text-sm mt-4">
-        <.link href={~p"/administrators/register"}>Register</.link>
-        | <.link href={~p"/administrators/log_in"}>Log in</.link>
+        <.link href={~p"/administrators/log_in"}>Log in</.link>
       </p>
     </div>
     """

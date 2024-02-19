@@ -12,7 +12,6 @@ defmodule ReservaClasesWeb.AdministratorForgotPasswordLiveTest do
       {:ok, lv, html} = live(conn, ~p"/administrators/reset_password")
 
       assert html =~ "Forgot your password?"
-      assert has_element?(lv, ~s|a[href="#{~p"/administrators/register"}"]|, "Register")
       assert has_element?(lv, ~s|a[href="#{~p"/administrators/log_in"}"]|, "Log in")
     end
 
