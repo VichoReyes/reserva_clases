@@ -103,7 +103,8 @@ defmodule ReservaClases.ClassesTest do
     test "create_reservation/2 doesn't allow two reservations with same email" do
       event = event_fixture(%{total_vacancies: 5})
       assert {:ok, _} = Classes.create_reservation(@valid_attrs, event.id)
-      assert {:error, "Ya tienes una reserva para esta clase"} = Classes.create_reservation(@valid_attrs, event.id)
+      assert {:error, %Ecto.Changeset{errors: changeset_errors}} = Classes.create_reservation(@valid_attrs, event.id)
+      assert {"Ya tienes una reserva para esta clase", _} = changeset_errors[:email]
     end
 
     test "create_reservation/2 doesn't allow reservations too far into the future" do

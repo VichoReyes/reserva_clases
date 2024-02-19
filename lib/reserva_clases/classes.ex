@@ -167,13 +167,9 @@ defmodule ReservaClases.Classes do
     case event_accepts_reservations(event) do
       {false, reason} -> {:error, reason}
       {true, _} ->
-        if Enum.any?(event.reservations, & &1.email == attrs.email) do
-          {:error, "Ya tienes una reserva para esta clase"}
-        else
-          %Reservation{event_id: event_id}
-          |> Reservation.changeset(attrs)
-          |> Repo.insert()
-        end
+        %Reservation{event_id: event_id}
+        |> Reservation.changeset(attrs)
+        |> Repo.insert()
     end
   end
 
