@@ -40,7 +40,7 @@
         row_id={fn event -> "events-#{event.id}" end}
       >
         <:col :let={event} label="Título"><%= event.title %></:col>
-        <:col :let={event} label="Hora"><%= NaiveDateTime.to_time(event.starts_at) %></:col>
+        <:col :let={event} label="Hora"><%= Calendar.strftime(event.starts_at, "%I:%M%P") %></:col>
         <:action :let={event}>
           <div class="sr-only">
             <.link navigate={~p"/events/#{event}"}>Show</.link>

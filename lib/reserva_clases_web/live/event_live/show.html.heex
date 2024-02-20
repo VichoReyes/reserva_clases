@@ -1,6 +1,8 @@
 <.header>
-  Event <%= @event.id %>
-  <:subtitle>This is a event record from your database.</:subtitle>
+  <%= @event.title %>
+  <:subtitle>
+    <%= strftime(@event.starts_at, "%A %d de %B a las %I:%M%P") %>
+  </:subtitle>
   <:actions>
     <.link :if={@current_administrator} patch={~p"/events/#{@event}/show/edit"} phx-click={JS.push_focus()}>
       <.button>Edit event</.button>
@@ -19,8 +21,6 @@
 </.header>
 
 <.list>
-  <:item title="Title"><%= @event.title %></:item>
-  <:item title="Starts at"><%= @event.starts_at %></:item>
   <:item title="Description">
     <%= if @event.description do %>
       <%= @event.description %>

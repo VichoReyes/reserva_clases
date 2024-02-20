@@ -20,6 +20,16 @@ defmodule ReservaClasesWeb.EventLive.Show do
      |> assign(:reservation, %Classes.Reservation{event_id: event.id})}
   end
 
+  defp strftime(time, format) do
+    month_names = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"}
+    day_of_week_names = {"Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"}
+    Calendar.strftime(
+      time,
+      format,
+      month_names: &elem(month_names, &1 - 1),
+      day_of_week_names: &elem(day_of_week_names, &1 - 1))
+  end
+
   alias ReservaClases.Classes.Event
 
   defp page_title(:show, %Event{title: title}), do: "#{title}"
