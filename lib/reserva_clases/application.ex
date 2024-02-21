@@ -17,9 +17,10 @@ defmodule ReservaClases.Application do
       # Start Finch
       {Finch, name: ReservaClases.Finch},
       # Start the Endpoint (http/https)
-      ReservaClasesWeb.Endpoint
+      ReservaClasesWeb.Endpoint,
       # Start a worker by calling: ReservaClases.Worker.start_link(arg)
       # {ReservaClases.Worker, arg}
+      ReservaClases.Classes.EventRepeater
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

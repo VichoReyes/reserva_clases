@@ -7,6 +7,7 @@ defmodule ReservaClases.Classes do
   alias ReservaClases.Repo
 
   alias ReservaClases.Classes.Event
+  alias ReservaClases.Classes.EventRepeater
 
   @doc """
   Returns a map of lists of events belonging to a week.
@@ -67,9 +68,18 @@ defmodule ReservaClases.Classes do
 
   """
   def create_event(attrs \\ %{}) do
-    %Event{}
-    |> Event.changeset(attrs)
-    |> Repo.insert()
+    changeset = %Event{}
+      |> Event.changeset(attrs)
+    case Repo.insert(changeset) do
+      {:ok, event} ->
+        # if the event is repeated weekly, generate repetitions
+        if event.repeat_weekly do
+          EventRepeater.generate_repeats(event)
+        end
+        {:ok, event}
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   @doc """

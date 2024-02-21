@@ -37,6 +37,22 @@ defmodule ReservaClases.ClassesTest do
       assert {:error, %Ecto.Changeset{}} = Classes.create_event(@invalid_attrs)
     end
 
+    test "create_event/1 with repeat_weekly creates at least three events" do
+      first_event = event_fixture(%{repeat_weekly: true})
+      assert first_event.repeat_weekly == true
+      assert first_event.is_repeat_of == nil
+
+      second_event = from(e in Event, where: e.is_repeat_of == ^first_event.id) |> Repo.one!()
+      assert second_event.repeat_weekly == true
+      assert second_event.is_repeat_of == first_event.id
+      assert second_event.starts_at == NaiveDateTime.add(first_event.starts_at, 7, :day)
+
+      third_event = from(e in Event, where: e.is_repeat_of == ^second_event.id) |> Repo.one!()
+      assert third_event.repeat_weekly == true
+      assert third_event.is_repeat_of == second_event.id
+      assert third_event.starts_at == NaiveDateTime.add(second_event.starts_at, 7, :day)
+    end
+
     test "update_event/2 with valid data updates the event" do
       event = event_fixture()
       update_attrs = %{description: "some updated description", title: "some updated title", starts_at: ~N[2024-01-15 21:16:00], total_vacancies: 43}
