@@ -23,8 +23,9 @@ defmodule ReservaClasesWeb.EventLive.FormComponent do
         <.input field={@form[:starts_at]} type="datetime-local" label="Fecha" />
         <.input field={@form[:description]} type="text" label="Descripción" />
         <.input field={@form[:total_vacancies]} type="number" label="Cupos totales" />
+        <.input disabled={@action != :new} field={@form[:repeat_weekly]} type="checkbox" label="Se repite semanalmente" />
         <:actions>
-          <.button phx-disable-with="Saving...">Guardar</.button>
+          <.button phx-disable-with="Guardando...">Guardar</.button>
         </:actions>
       </.simple_form>
     </div>
