@@ -35,9 +35,50 @@ defmodule ReservaClases.Classes.EventRepeater do
     GenServer.call(__MODULE__, {:generate_repeats, event})
   end
 
+  @doc """
+  Given an event with repetitions, delete it, and disable
+  the machinery that would normally make it reappear.
+  If include_repetitions is true, future repetitions will also be deleted
+  (past repetitions are left untouched).
+  """
+  def detach_and_delete(event, include_repetitions) do
+    GenServer.call(__MODULE__, {:detach_and_delete, event, include_repetitions})
+  end
+
+
   def handle_call({:generate_repeats, event}, _from, _state) do
     generate_checking_date(event)
     {:reply, :ok, nil}
+  end
+
+  def handle_call({:detach_and_delete, event, include_repetitions}, _from, _state) do
+    result = detach_and_delete_helper(event, include_repetitions)
+    {:reply, result, nil}
+  end
+
+  defp detach_and_delete_helper(event, include_repetitions) do
+    # stop future generation of repetitions
+    if event.is_repeat_of do
+      {:ok, _} = Repo.get!(Event, event.is_repeat_of)
+        |> Event.changeset(%{repeat_weekly: false})
+        |> Repo.update()
+    end
+
+    # either delete or detach the next one
+    case Repo.one(from(e in Event, where: e.is_repeat_of == ^event.id)) do
+      nil -> nil
+      %Event{} = repetition_event ->
+        if include_repetitions do
+          detach_and_delete_helper(repetition_event, include_repetitions)
+        else
+          {:ok, _} = repetition_event
+            |> Event.changeset(%{is_repeat_of: nil})
+            |> Repo.update()
+        end
+    end
+
+    # delete the event
+    Repo.delete(event)
   end
 
   def handle_info(:update_repeats, _state) do

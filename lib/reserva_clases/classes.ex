@@ -101,7 +101,7 @@ defmodule ReservaClases.Classes do
   end
 
   @doc """
-  Deletes a event.
+  Deletes an event.
 
   ## Examples
 
@@ -112,8 +112,22 @@ defmodule ReservaClases.Classes do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_event(%Event{} = event) do
+  def delete_event(event, on_repetitions \\ :ask)
+
+  def delete_event(%Event{repeat_weekly: false} = event, _) do
     Repo.delete(event)
+  end
+
+  def delete_event(%Event{}, :ask) do
+    {:error, :delete_repetitions_unclear}
+  end
+
+  def delete_event(%Event{} = event, :delete_repetitions) do
+    EventRepeater.detach_and_delete(event, true)
+  end
+
+  def delete_event(%Event{} = event, :keep_repetitions) do
+    EventRepeater.detach_and_delete(event, false)
   end
 
   @doc """

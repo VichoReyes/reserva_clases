@@ -76,6 +76,25 @@ defmodule ReservaClases.ClassesTest do
       assert_raise Ecto.NoResultsError, fn -> Classes.get_event!(event.id) end
     end
 
+    test "delete_event/1 on a repeated event returns error (argument missing)" do
+      event = event_fixture(%{repeat_weekly: true})
+      assert {:error, :delete_repetitions_unclear} = Classes.delete_event(event)
+      assert event == Classes.get_event!(event.id)
+    end
+
+    test "delete_event/1 with :delete_repetitions deletes all repetitions" do
+      event = event_fixture(%{repeat_weekly: true})
+      assert {:ok, _} = Classes.delete_event(event, :delete_repetitions)
+      assert Repo.aggregate(Event, :count) == 0
+    end
+
+    test "delete_event/1 with :keep_repetitions deletes the event but keeps repetitions" do
+      event = event_fixture(%{repeat_weekly: true})
+      assert {:ok, _} = Classes.delete_event(event, :keep_repetitions)
+      assert_raise Ecto.NoResultsError, fn -> Classes.get_event!(event.id) end
+      assert Repo.aggregate(Event, :count) > 0
+    end
+
     test "change_event/1 returns a event changeset" do
       event = event_fixture()
       assert %Ecto.Changeset{} = Classes.change_event(event)
