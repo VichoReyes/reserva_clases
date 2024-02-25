@@ -47,7 +47,7 @@ defmodule ReservaClasesWeb.EventLiveTest do
              |> form("#event-form", event: @create_attrs)
              |> render_submit()
 
-      assert_patch(index_live, ~p"/events")
+      assert_patch(index_live, ~p"/events?week=0")
 
       html = render(index_live)
       assert html =~ "Event created successfully"
@@ -60,7 +60,7 @@ defmodule ReservaClasesWeb.EventLiveTest do
       assert index_live |> element("#events-#{event.id} a", "Edit") |> render_click() =~
                "Editar #{event.title}"
 
-      assert_patch(index_live, ~p"/events/#{event}/edit")
+      assert_patch(index_live, ~p"/events/#{event}/edit?week=0")
 
       assert index_live
              |> form("#event-form", event: @invalid_attrs)
@@ -70,7 +70,7 @@ defmodule ReservaClasesWeb.EventLiveTest do
              |> form("#event-form", event: @update_attrs)
              |> render_submit()
 
-      assert_patch(index_live, ~p"/events")
+      assert_patch(index_live, ~p"/events?week=0")
 
       html = render(index_live)
       assert html =~ "Event updated successfully"

@@ -45,7 +45,9 @@
           <div class="sr-only">
             <.link navigate={~p"/events/#{event}"}>Show</.link>
           </div>
-          <.link :if={@current_administrator} patch={~p"/events/#{event}/edit"}>Edit</.link>
+          <.link :if={@current_administrator} patch={~p"/events/#{event}/edit?week=#{@week_offset}"}>
+            Edit
+          </.link>
         </:action>
         <:action :let={event}>
           <.link
@@ -65,7 +67,7 @@
   :if={@live_action in [:new, :edit] && @current_administrator}
   id="event-modal"
   show
-  on_cancel={JS.patch(~p"/events")}
+  on_cancel={JS.patch(~p"/events?week=#{@week_offset}")}
 >
   <.live_component
     module={ReservaClasesWeb.EventLive.FormComponent}
@@ -73,6 +75,6 @@
     title={@page_title}
     action={@live_action}
     event={@event}
-    patch={~p"/events"}
+    patch={~p"/events?week=#{@week_offset}"}
   />
 </.modal>
