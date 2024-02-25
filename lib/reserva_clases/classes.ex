@@ -36,6 +36,19 @@ defmodule ReservaClases.Classes do
   end
 
   @doc """
+  Inverse operation to the one done by list_events to filter events.
+  That is to say, given a date time, return the offset of the week it
+  belongs to.
+  """
+  def week_offset(%NaiveDateTime{} = datetime) do
+    current_monday = DateTime.now!("America/Santiago")
+      |> DateTime.to_date()
+      |> Date.beginning_of_week()
+    Date.diff(datetime, current_monday)
+      |> Integer.floor_div(7)
+  end
+
+  @doc """
   Gets a single event.
 
   Raises `Ecto.NoResultsError` if the Event does not exist.
