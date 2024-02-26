@@ -58,7 +58,7 @@ defmodule ReservaClasesWeb.EventLive.Index do
 
   @impl true
   def handle_info({ReservaClasesWeb.EventLive.FormComponent, {:saved, _event}}, socket) do
-    {:noreply, assign(socket, :events, Classes.list_events())}
+    {:noreply, socket}
   end
 
   @impl true
@@ -66,9 +66,19 @@ defmodule ReservaClasesWeb.EventLive.Index do
     if !socket.assigns.current_administrator do
       raise "Unauthorized"
     end
+
     event = Classes.get_event!(id)
     {:ok, _} = Classes.delete_event(event)
 
-    {:noreply, assign(socket, :events, Classes.list_events())}
+    # sería tanto más simple reutilizar put_week_events
+    # pero no sé de dónde sacar los params.
+    new_events =
+      socket.assigns.events
+      |> Enum.map(fn {day, daylist} ->
+        {day, Enum.reject(daylist, fn e -> e.id == event.id end)}
+      end)
+      |> Enum.reject(fn {_, daylist} -> Enum.empty?(daylist) end)
+
+    {:noreply, assign(socket, :events, new_events)}
   end
 end
