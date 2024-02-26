@@ -44,6 +44,14 @@ defmodule ReservaClasesWeb.EventLive.Index do
     |> assign(:event, event)
   end
 
+  defp apply_action(socket, :delete_repeat, %{"id" => id}) do
+    event = Classes.get_event!(id)
+
+    socket
+    |> assign(:page_title, "Eliminar #{event.title}?")
+    |> assign(:event, event)
+  end
+
   defp apply_action(socket, :new, _params) do
     socket
     |> assign(:page_title, "Nuevo evento")
@@ -62,13 +70,20 @@ defmodule ReservaClasesWeb.EventLive.Index do
   end
 
   @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
+  def handle_event("delete", %{"id" => id} = details, socket) do
     if !socket.assigns.current_administrator do
       raise "Unauthorized"
     end
 
     event = Classes.get_event!(id)
-    {:ok, _} = Classes.delete_event(event)
+    {:ok, _} = case details do
+      %{"keep_repetitions" => true} ->
+        Classes.delete_event(event, :keep_repetitions)
+      %{"keep_repetitions" => false} ->
+        Classes.delete_event(event, :delete_repetitions)
+      %{} ->
+        Classes.delete_event(event)
+    end
 
     # sería tanto más simple reutilizar put_week_events
     # pero no sé de dónde sacar los params.

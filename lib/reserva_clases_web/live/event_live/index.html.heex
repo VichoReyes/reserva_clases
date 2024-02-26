@@ -51,9 +51,15 @@
         </:action>
         <:action :let={event}>
           <.link
-            :if={@current_administrator}
+            :if={@current_administrator && !event.repeat_weekly}
             phx-click={JS.push("delete", value: %{id: event.id}) |> hide("##{event.id}")}
             data-confirm="Are you sure?"
+          >
+            Delete
+          </.link>
+          <.link
+            :if={@current_administrator && event.repeat_weekly}
+            patch={~p"/events/#{event}/delete_repeat?week=#{@week_offset}"}
           >
             Delete
           </.link>
@@ -77,4 +83,27 @@
     event={@event}
     patch={~p"/events?week=#{@week_offset}"}
   />
+</.modal>
+
+<.modal
+  :if={@live_action == :delete_repeat && @current_administrator}
+  id="delete-modal"
+  show
+  on_cancel={JS.patch(~p"/events?week=#{@week_offset}")}
+>
+  La clase <%= @event.title %> se repite semanalmente. Quieres eliminar solo la
+  del <%= Calendar.strftime(@event.starts_at, "%d de %B") %>, <!-- TODO: traducir meses -->
+  o también eliminar sus repeticiones futuras?
+  <div class="ml-auto mt-4 w-fit">
+    <.button
+      phx-click={JS.push("delete", value: %{id: @event.id, keep_repetitions: true}) |> JS.patch(~p"/events?week=#{@week_offset}")}
+    >
+      Eliminar esta clase, mantener repeticiones
+    </.button>
+    <.button
+      phx-click={JS.push("delete", value: %{id: @event.id, keep_repetitions: false}) |> JS.patch(~p"/events?week=#{@week_offset}")}
+    >
+      Eliminar también sus repeticiones
+    </.button>
+  </div>
 </.modal>

@@ -47,6 +47,7 @@ defmodule ReservaClasesWeb.Router do
 
       live "/events/new", EventLive.Index, :new
       live "/events/:id/edit", EventLive.Index, :edit
+      live "/events/:id/delete_repeat", EventLive.Index, :delete_repeat
       live "/events/:id/show/edit", EventLive.Show, :edit
 
       # se pueden crear reservas sin ser administrador, pero montamos el administrador
