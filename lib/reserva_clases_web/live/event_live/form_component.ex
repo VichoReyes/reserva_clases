@@ -22,7 +22,13 @@ defmodule ReservaClasesWeb.EventLive.FormComponent do
         <.input field={@form[:title]} type="text" label="Nombre" />
         <.input field={@form[:starts_at]} type="datetime-local" label="Fecha" />
         <.input field={@form[:description]} type="text" label="Descripción" />
-        <.input field={@form[:total_vacancies]} type="number" label="Cupos totales" />
+        <div>
+          <.input field={@form[:total_vacancies]} type="number" label="Cupos totales" />
+          <p class="flex gap-1 text-sm leading-6 text-zinc-600">
+            <.icon name="hero-question-mark-circle-mini" class="mt-0.5 h-5 w-5 flex-none" />
+            En caso de que el instructor gestione sus reservas, poner cero.
+          </p>
+        </div>
         <.input disabled={@action != :new} field={@form[:repeat_weekly]} type="checkbox" label="Se repite semanalmente" />
         <:actions>
           <.button phx-disable-with="Guardando...">Guardar</.button>
