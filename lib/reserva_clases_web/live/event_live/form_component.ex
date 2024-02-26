@@ -9,7 +9,6 @@ defmodule ReservaClasesWeb.EventLive.FormComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Subtítulo.</:subtitle>
       </.header>
 
       <.simple_form
@@ -69,7 +68,7 @@ defmodule ReservaClasesWeb.EventLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Event updated successfully")
+         |> put_flash(:info, "Clase modificada")
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -84,7 +83,7 @@ defmodule ReservaClasesWeb.EventLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Event created successfully")
+         |> put_flash(:info, "Clase creada")
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->

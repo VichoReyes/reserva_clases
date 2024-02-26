@@ -54,13 +54,13 @@ defmodule ReservaClasesWeb.EventLive.Index do
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "Nuevo evento")
+    |> assign(:page_title, "Nueva clase")
     |> assign(:event, %Event{})
   end
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Todos los eventos")
+    |> assign(:page_title, "Lista de clases")
     |> assign(:event, nil)
   end
 

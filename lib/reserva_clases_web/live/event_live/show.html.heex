@@ -5,7 +5,7 @@
   </:subtitle>
   <:actions>
     <.link :if={@current_administrator} patch={~p"/events/#{@event}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit event</.button>
+      <.button>Editar clase</.button>
     </.link>
     <%= case @event_accepts_reservations do %>
       <% {true, _} -> %>
@@ -53,21 +53,21 @@
     <% end %>
   </:col>
   <:action :let={reservation}>
-    <.link :if={@current_administrator} patch={~p"/reservations/#{reservation}/edit"}>Edit</.link>
+    <.link :if={@current_administrator} patch={~p"/reservations/#{reservation}/edit"}>Editar</.link>
   </:action>
   <:action :let={reservation}>
     <.link
       :if={@current_administrator}
       phx-click={JS.push("delete", value: %{id: reservation.id}) |> hide("##{reservation.id}")}
-      data-confirm="Are you sure?"
+      data-confirm="Eliminar esta reserva?"
     >
-      Delete
+      Eliminar
     </.link>
   </:action>
 </.table>
 </section>
 
-<.back navigate={~p"/events"}>Back to events</.back>
+<.back navigate={~p"/events"}>Volver a la lista de clases</.back>
 
 <.modal :if={@live_action == :edit and @current_administrator} id="event-modal" show on_cancel={JS.patch(~p"/events/#{@event}")}>
   <.live_component

@@ -49,7 +49,7 @@ defmodule ReservaClasesWeb.ReservationLiveTest do
       assert_patch(event_live, ~p"/events/#{event.id}")
 
       html = render(event_live)
-      assert html =~ "Reservation created successfully"
+      assert html =~ "Reserva creada"
       assert html =~ "some full_name"
     end
 
@@ -72,14 +72,14 @@ defmodule ReservaClasesWeb.ReservationLiveTest do
       assert_patch(index_live, ~p"/reservations")
 
       html = render(index_live)
-      assert html =~ "Reservation updated successfully"
+      assert html =~ "Reserva modificada"
       assert html =~ "some updated full_name"
     end
 
     test "deletes reservation in listing", %{conn: conn, reservation: reservation} do
       {:ok, index_live, _html} = live(conn, ~p"/reservations")
 
-      assert index_live |> element("#reservations-#{reservation.id} a", "Delete") |> render_click()
+      assert index_live |> element("#reservations-#{reservation.id} a", "Eliminar") |> render_click()
       refute has_element?(index_live, "#reservations-#{reservation.id}")
     end
   end

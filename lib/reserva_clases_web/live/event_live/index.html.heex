@@ -1,5 +1,5 @@
 <.header>
-  <.link patch={~p"/events?week=#{@week_offset - 1}"}>
+  <.link patch={~p"/events?week=#{@week_offset - 1}"} aria-label="semana anterior">
     <.icon name="hero-chevron-left" />
   </.link>
   <%= cond do %>
@@ -14,12 +14,12 @@
     <% @week_offset > 0 -> %>
       Clases de <%= @week_offset %> semanas en el futuro
   <% end %>
-  <.link patch={~p"/events?week=#{@week_offset + 1}"}>
+  <.link patch={~p"/events?week=#{@week_offset + 1}"} aria-label="semana siguiente">
     <.icon name="hero-chevron-right" />
   </.link>
   <:actions>
     <.link :if={@current_administrator} patch={~p"/events/new"}>
-      <.button>New Event</.button>
+      <.button>Nueva clase</.button>
     </.link>
   </:actions>
 </.header>
@@ -43,10 +43,10 @@
         <:col :let={event} label="Hora"><%= Calendar.strftime(event.starts_at, "%I:%M%P") %></:col>
         <:action :let={event}>
           <div class="sr-only">
-            <.link navigate={~p"/events/#{event}"}>Show</.link>
+            <.link navigate={~p"/events/#{event}"}>Ver</.link>
           </div>
           <.link :if={@current_administrator} patch={~p"/events/#{event}/edit?week=#{@week_offset}"}>
-            Edit
+            Editar
           </.link>
         </:action>
         <:action :let={event}>
@@ -55,13 +55,13 @@
             phx-click={JS.push("delete", value: %{id: event.id}) |> hide("##{event.id}")}
             data-confirm="Are you sure?"
           >
-            Delete
+            Eliminar
           </.link>
           <.link
             :if={@current_administrator && event.repeat_weekly}
             patch={~p"/events/#{event}/delete_repeat?week=#{@week_offset}"}
           >
-            Delete
+            Eliminar
           </.link>
         </:action>
       </.table>

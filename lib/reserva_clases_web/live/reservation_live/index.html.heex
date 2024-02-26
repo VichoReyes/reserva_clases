@@ -1,23 +1,29 @@
 <.header>
-  Listing Reservations
+  Todas las reservas
 </.header>
 
 <.table
   id="reservations"
   rows={@streams.reservations}
 >
-  <:col :let={{_id, reservation}} label="Full name"><%= reservation.full_name %></:col>
+  <:col :let={{_id, reservation}} label="Nombre completo"><%= reservation.full_name %></:col>
   <:col :let={{_id, reservation}} label="Email"><%= reservation.email %></:col>
-  <:col :let={{_id, reservation}} label="Is member"><%= reservation.is_member %></:col>
+  <:col :let={{_id, reservation}} label="Declara ser socio">
+    <%= if reservation.is_member do %>
+      <.icon name="hero-check" class="text-green-500" />
+    <% else %>
+      <.icon name="hero-x-mark" class="text-red-500" />
+    <% end %>
+  </:col>
   <:action :let={{_id, reservation}}>
-    <.link patch={~p"/reservations/#{reservation}/edit"}>Edit</.link>
+    <.link patch={~p"/reservations/#{reservation}/edit"}>Editar</.link>
   </:action>
   <:action :let={{id, reservation}}>
     <.link
       phx-click={JS.push("delete", value: %{id: reservation.id}) |> hide("##{id}")}
-      data-confirm="Are you sure?"
+      data-confirm="Eliminando reserva. Está seguro?"
     >
-      Delete
+      Eliminar
     </.link>
   </:action>
 </.table>

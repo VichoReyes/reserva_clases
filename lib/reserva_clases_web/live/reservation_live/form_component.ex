@@ -11,7 +11,7 @@ defmodule ReservaClasesWeb.ReservationLive.FormComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage reservation records in your database.</:subtitle>
+        <:subtitle>Necesitamos estos datos para hacer la reserva.</:subtitle>
       </.header>
 
       <.simple_form
@@ -23,12 +23,12 @@ defmodule ReservaClasesWeb.ReservationLive.FormComponent do
       >
         <.input field={@form[:full_name]} type="text" label="Nombre completo" />
         <.input field={@form[:email]} type="email" label="Email" />
-        <.input field={@form[:is_member]} type="checkbox" label="Declara ser socio" />
+        <.input field={@form[:is_member]} type="checkbox" label="Soy socio/a DAV" />
         <%= if @action == :new_reservation do %>
           <Turnstile.widget theme="light" />
         <% end %>
         <:actions>
-          <.button phx-disable-with="Saving...">Save Reservation</.button>
+          <.button phx-disable-with="Guardando...">Hacer reserva</.button>
         </:actions>
       </.simple_form>
     </div>
@@ -71,7 +71,7 @@ defmodule ReservaClasesWeb.ReservationLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Reservation updated successfully")
+         |> put_flash(:info, "Reserva modificada")
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -97,7 +97,7 @@ defmodule ReservaClasesWeb.ReservationLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Reservation created successfully")
+         |> put_flash(:info, "Reserva creada")
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
