@@ -32,7 +32,7 @@
   <% end %>
   <%= for {day, events} <- @events do %>
     <div class="p-4 bg-slate-100 border rounded">
-      <h2 class="font-bold"><%= @days_of_week[day] %></h2>
+      <h2 class="font-bold"><%= strftime(hd(events).starts_at, "%A %d de %B") %></h2>
       <.table
         id={"events-day-#{day}"}
         rows={events}
@@ -40,7 +40,7 @@
         row_id={fn event -> "events-#{event.id}" end}
       >
         <:col :let={event} label="Título"><%= event.title %></:col>
-        <:col :let={event} label="Hora"><%= Calendar.strftime(event.starts_at, "%I:%M%P") %></:col>
+        <:col :let={event} label="Hora"><%= strftime(event.starts_at, "%I:%M%P") %></:col>
         <:action :let={event}>
           <div class="sr-only">
             <.link navigate={~p"/events/#{event}"}>Ver</.link>
@@ -92,7 +92,7 @@
   on_cancel={JS.patch(~p"/events?week=#{@week_offset}")}
 >
   La clase <%= @event.title %> se repite semanalmente. Quieres eliminar solo la
-  del <%= Calendar.strftime(@event.starts_at, "%d de %B") %>, <!-- TODO: traducir meses -->
+  del <%= strftime(@event.starts_at, "%d de %B") %>, <!-- TODO: traducir meses -->
   o también eliminar sus repeticiones futuras?
   <div class="ml-auto mt-4 w-fit">
     <.button
