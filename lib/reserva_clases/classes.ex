@@ -125,14 +125,10 @@ defmodule ReservaClases.Classes do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_event(event, on_repetitions \\ :ask)
+  def delete_event(event, on_repetitions \\ :keep_repetitions)
 
-  def delete_event(%Event{repeat_weekly: false} = event, _) do
+  def delete_event(%Event{repeat_weekly: false, is_repeat_of: nil} = event, _) do
     Repo.delete(event)
-  end
-
-  def delete_event(%Event{}, :ask) do
-    {:error, :delete_repetitions_unclear}
   end
 
   def delete_event(%Event{} = event, :delete_repetitions) do

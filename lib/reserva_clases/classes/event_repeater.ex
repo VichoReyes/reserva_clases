@@ -82,9 +82,9 @@ defmodule ReservaClases.Classes.EventRepeater do
   end
 
   def handle_info(:update_repeats, _state) do
-    from = Date.utc_today() |> Date.add(-1)
+    from = Date.utc_today() |> Date.add(-1) |> NaiveDateTime.new!(~T[00:00:00])
     # 3 weeks
-    to = Date.utc_today() |> Date.add(21)
+    to = Date.utc_today() |> Date.add(21) |> NaiveDateTime.new!(~T[23:59:59])
 
     from(e in Event,
       where: e.repeat_weekly == true and e.starts_at >= ^from and e.starts_at <= ^to

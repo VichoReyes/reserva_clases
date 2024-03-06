@@ -1,4 +1,5 @@
 defmodule ReservaClases.ClassesTest do
+  alias ReservaClases.Classes.EventRepeater
   use ReservaClases.DataCase
 
   alias ReservaClases.Classes
@@ -76,12 +77,6 @@ defmodule ReservaClases.ClassesTest do
       assert_raise Ecto.NoResultsError, fn -> Classes.get_event!(event.id) end
     end
 
-    test "delete_event/1 on a repeated event returns error (argument missing)" do
-      event = event_fixture(%{repeat_weekly: true})
-      assert {:error, :delete_repetitions_unclear} = Classes.delete_event(event)
-      assert event == Classes.get_event!(event.id)
-    end
-
     test "delete_event/1 with :delete_repetitions deletes all repetitions" do
       event = event_fixture(%{repeat_weekly: true})
       assert {:ok, _} = Classes.delete_event(event, :delete_repetitions)
@@ -93,6 +88,37 @@ defmodule ReservaClases.ClassesTest do
       assert {:ok, _} = Classes.delete_event(event, :keep_repetitions)
       assert_raise Ecto.NoResultsError, fn -> Classes.get_event!(event.id) end
       assert Repo.aggregate(Event, :count) > 0
+    end
+
+    test "delete_event/1 on a repetition stays deleted (:delete_repetitions case)" do
+      event = event_fixture(%{repeat_weekly: true})
+      first_repeat = from(e in Event, where: e.is_repeat_of == ^event.id) |> Repo.one!()
+      {:ok, _} = Classes.delete_event(first_repeat, :delete_repetitions)
+      assert Repo.aggregate(Event, :count) == 1
+      {:noreply, nil} = EventRepeater.handle_info(:update_repeats, nil)
+      assert Repo.aggregate(Event, :count) == 1
+    end
+
+    test "delete_event/1 on a repetition stays deleted (:keep_repetitions case)" do
+      event = event_fixture(%{repeat_weekly: true})
+      first_repeat = from(e in Event, where: e.is_repeat_of == ^event.id) |> Repo.one!()
+      total_num_events = Repo.aggregate(Event, :count)
+      {:ok, _} = Classes.delete_event(first_repeat, :keep_repetitions)
+      assert Repo.aggregate(Event, :count) == total_num_events - 1
+      {:noreply, nil} = EventRepeater.handle_info(:update_repeats, nil)
+      assert Repo.aggregate(Event, :count) == total_num_events - 1
+    end
+
+    test "delete_event/1 on a repetition stays deleted (third, specific case)" do
+      event = event_fixture(%{repeat_weekly: true})
+      first_repeat = from(e in Event, where: e.is_repeat_of == ^event.id) |> Repo.one!()
+      second_repeat = from(e in Event, where: e.is_repeat_of == ^first_repeat.id) |> Repo.one!()
+      total_num_events = Repo.aggregate(Event, :count)
+      {:ok, _} = Classes.delete_event(second_repeat, :keep_repetitions)
+      assert Repo.aggregate(Event, :count) == total_num_events - 1
+      {:ok, _} = Classes.delete_event(Classes.get_event!(first_repeat.id))
+      {:noreply, nil} = EventRepeater.handle_info(:update_repeats, nil)
+      assert Repo.aggregate(Event, :count) == total_num_events - 2
     end
 
     test "change_event/1 returns a event changeset" do
