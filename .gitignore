@@ -35,3 +35,4 @@ reserva_clases-*.tar
 npm-debug.log
 /assets/node_modules/
 
+*.sublime-workspace
