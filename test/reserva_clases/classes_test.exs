@@ -14,8 +14,11 @@ defmodule ReservaClases.ClassesTest do
     test "list_events/0 returns events of week" do
       event = event_fixture()
       _past_event = event_fixture(starts_at: ~N[2010-01-01T10:00:00])
-      events = Classes.list_events()
-      |> Map.values()
+
+      events =
+        Classes.list_events()
+        |> Map.values()
+
       assert events == [[event]]
     end
 
@@ -25,7 +28,12 @@ defmodule ReservaClases.ClassesTest do
     end
 
     test "create_event/1 with valid data creates a event" do
-      valid_attrs = %{description: "some description", title: "some title", starts_at: ~N[2024-01-14 21:16:00], total_vacancies: 42}
+      valid_attrs = %{
+        description: "some description",
+        title: "some title",
+        starts_at: ~N[2024-01-14 21:16:00],
+        total_vacancies: 42
+      }
 
       assert {:ok, %Event{} = event} = Classes.create_event(valid_attrs)
       assert event.description == "some description"
@@ -56,7 +64,13 @@ defmodule ReservaClases.ClassesTest do
 
     test "update_event/2 with valid data updates the event" do
       event = event_fixture()
-      update_attrs = %{description: "some updated description", title: "some updated title", starts_at: ~N[2024-01-15 21:16:00], total_vacancies: 43}
+
+      update_attrs = %{
+        description: "some updated description",
+        title: "some updated title",
+        starts_at: ~N[2024-01-15 21:16:00],
+        total_vacancies: 43
+      }
 
       assert {:ok, %Event{} = event} = Classes.update_event(event, update_attrs)
       assert event.description == "some updated description"
@@ -148,7 +162,9 @@ defmodule ReservaClases.ClassesTest do
     test "create_reservation/2 with valid data creates a reservation" do
       event = event_fixture()
 
-      assert {:ok, %Reservation{} = reservation} = Classes.create_reservation(@valid_attrs, event.id)
+      assert {:ok, %Reservation{} = reservation} =
+               Classes.create_reservation(@valid_attrs, event.id)
+
       assert reservation.is_member == true
       assert reservation.full_name == "some full_name"
       assert reservation.email == "some@email.com"
@@ -158,20 +174,27 @@ defmodule ReservaClases.ClassesTest do
     test "create_reservation/2 doesn't allow creating on full events" do
       event = event_fixture(%{total_vacancies: 1})
       assert {:ok, _} = Classes.create_reservation(@valid_attrs, event.id)
-      assert {:error, "Esta clase ya está llena"} = Classes.create_reservation(%{@valid_attrs | email: "other@email.com"}, event.id)
+
+      assert {:error, "Esta clase ya está llena"} =
+               Classes.create_reservation(%{@valid_attrs | email: "other@email.com"}, event.id)
     end
 
     test "create_reservation/2 doesn't allow two reservations with same email" do
       event = event_fixture(%{total_vacancies: 5})
       assert {:ok, _} = Classes.create_reservation(@valid_attrs, event.id)
-      assert {:error, %Ecto.Changeset{errors: changeset_errors}} = Classes.create_reservation(@valid_attrs, event.id)
+
+      assert {:error, %Ecto.Changeset{errors: changeset_errors}} =
+               Classes.create_reservation(@valid_attrs, event.id)
+
       assert {"Ya tienes una reserva para esta clase", _} = changeset_errors[:email]
     end
 
     test "create_reservation/2 doesn't allow reservations too far into the future" do
       future_date = NaiveDateTime.utc_now() |> NaiveDateTime.add(30, :day)
       event = event_fixture(%{starts_at: future_date})
-      assert {:error, "Todavía no se puede reservar para esta clase"} = Classes.create_reservation(@valid_attrs, event.id)
+
+      assert {:error, "Todavía no se puede reservar para esta clase"} =
+               Classes.create_reservation(@valid_attrs, event.id)
     end
 
     test "create_reservation/2 with invalid data returns error changeset" do
@@ -181,9 +204,16 @@ defmodule ReservaClases.ClassesTest do
 
     test "update_reservation/2 with valid data updates the reservation" do
       reservation = reservation_fixture()
-      update_attrs = %{is_member: false, full_name: "some updated full_name", email: "some_updated@email"}
 
-      assert {:ok, %Reservation{} = reservation} = Classes.update_reservation(reservation, update_attrs)
+      update_attrs = %{
+        is_member: false,
+        full_name: "some updated full_name",
+        email: "some_updated@email"
+      }
+
+      assert {:ok, %Reservation{} = reservation} =
+               Classes.update_reservation(reservation, update_attrs)
+
       assert reservation.is_member == false
       assert reservation.full_name == "some updated full_name"
       assert reservation.email == "some_updated@email"

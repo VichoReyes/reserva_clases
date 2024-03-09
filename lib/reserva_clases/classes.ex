@@ -20,17 +20,21 @@ defmodule ReservaClases.Classes do
 
   """
   def list_events(weeks_from_today \\ 0) do
-    monday = DateTime.now!("America/Santiago")
-    |> DateTime.to_date()
-    |> Date.add(weeks_from_today * 7)
-    |> Date.beginning_of_week()
+    monday =
+      DateTime.now!("America/Santiago")
+      |> DateTime.to_date()
+      |> Date.add(weeks_from_today * 7)
+      |> Date.beginning_of_week()
+
     sunday = Date.add(monday, 6)
     # datetimes in DB are naive, referring to santiago time
     monday_start = NaiveDateTime.new!(monday, ~T[00:00:00])
     sunday_end = NaiveDateTime.new!(sunday, ~T[23:59:59])
+
     from(e in Event,
       where: e.starts_at >= ^monday_start and e.starts_at <= ^sunday_end,
-      order_by: [asc: e.starts_at])
+      order_by: [asc: e.starts_at]
+    )
     |> Repo.all()
     |> Enum.group_by(fn e -> Date.day_of_week(e.starts_at) end)
   end
@@ -41,11 +45,13 @@ defmodule ReservaClases.Classes do
   belongs to.
   """
   def week_offset(%NaiveDateTime{} = datetime) do
-    current_monday = DateTime.now!("America/Santiago")
+    current_monday =
+      DateTime.now!("America/Santiago")
       |> DateTime.to_date()
       |> Date.beginning_of_week()
+
     Date.diff(datetime, current_monday)
-      |> Integer.floor_div(7)
+    |> Integer.floor_div(7)
   end
 
   @doc """
@@ -81,15 +87,19 @@ defmodule ReservaClases.Classes do
 
   """
   def create_event(attrs \\ %{}) do
-    changeset = %Event{}
+    changeset =
+      %Event{}
       |> Event.changeset(attrs)
+
     case Repo.insert(changeset) do
       {:ok, event} ->
         # if the event is repeated weekly, generate repetitions
         if event.repeat_weekly do
           EventRepeater.generate_repeats(event)
         end
+
         {:ok, event}
+
       {:error, changeset} ->
         {:error, changeset}
     end
@@ -197,8 +207,11 @@ defmodule ReservaClases.Classes do
   """
   def create_reservation(attrs \\ %{}, event_id) do
     event = get_event!(event_id, [:reservations])
+
     case event_accepts_reservations(event) do
-      {false, reason} -> {:error, reason}
+      {false, reason} ->
+        {:error, reason}
+
       {true, _} ->
         %Reservation{event_id: event_id}
         |> Reservation.changeset(attrs)
@@ -211,17 +224,22 @@ defmodule ReservaClases.Classes do
   returns {false, reason} otherwise.
   """
   def event_accepts_reservations(event) do
-    limit_date = DateTime.now!("America/Santiago")
+    limit_date =
+      DateTime.now!("America/Santiago")
       |> DateTime.to_naive()
       |> NaiveDateTime.add(8, :day)
       |> NaiveDateTime.beginning_of_day()
+
     cond do
       event.total_vacancies == 0 ->
         {false, "Esta clase no acepta reservas por esta plataforma"}
+
       NaiveDateTime.after?(event.starts_at, limit_date) ->
         {false, "Todavía no se puede reservar para esta clase"}
+
       length(event.reservations) >= event.total_vacancies ->
         {false, "Esta clase ya está llena"}
+
       true ->
         {true, nil}
     end
