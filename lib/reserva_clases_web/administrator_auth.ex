@@ -204,7 +204,7 @@ defmodule ReservaClasesWeb.AdministratorAuth do
       conn
     else
       conn
-      |> put_flash(:error, "You must log in to access this page.")
+      |> put_flash(:error, "Esta página es solo para administradores.")
       |> maybe_store_return_to()
       |> redirect(to: ~p"/administrators/log_in")
       |> halt()

@@ -21,7 +21,7 @@ defmodule ReservaClasesWeb.AdministratorSettingsLiveTest do
 
       assert {:redirect, %{to: path, flash: flash}} = redirect
       assert path == ~p"/administrators/log_in"
-      assert %{"error" => "You must log in to access this page."} = flash
+      assert %{"error" => "Esta página es solo para administradores."} = flash
     end
   end
 
@@ -204,7 +204,7 @@ defmodule ReservaClasesWeb.AdministratorSettingsLiveTest do
       assert {:redirect, %{to: path, flash: flash}} = redirect
       assert path == ~p"/administrators/log_in"
       assert %{"error" => message} = flash
-      assert message == "You must log in to access this page."
+      assert message == "Esta página es solo para administradores."
     end
   end
 end

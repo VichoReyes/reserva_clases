@@ -234,7 +234,7 @@ defmodule ReservaClasesWeb.AdministratorAuthTest do
       assert redirected_to(conn) == ~p"/administrators/log_in"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
-               "You must log in to access this page."
+               "Esta página es solo para administradores."
     end
 
     test "stores the path to redirect to on GET", %{conn: conn} do
