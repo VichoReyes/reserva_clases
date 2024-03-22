@@ -4,6 +4,7 @@ defmodule ReservaClases.Classes do
   """
 
   import Ecto.Query, warn: false
+  require Logger
   alias Swoosh.Email
   alias ReservaClases.Repo
 
@@ -226,6 +227,7 @@ defmodule ReservaClases.Classes do
 
   defp send_confirmation_email(%Reservation{full_name: name, email: address}) do
     token = Mailer.GmailToken.get_token()
+    Logger.info("sending email using token #{String.slice(token, 1..4)}")
     Email.new()
       |> Email.to({name, address})
       |> Email.from({"Boulder DAV", "boulder@dav.cl"})
