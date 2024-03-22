@@ -28,7 +28,7 @@
       <span class="text-gray-500">(Sin descripción)</span>
     <% end %>
   </:item>
-  <:item title="Vacantes">
+  <:item :if={@event.total_vacancies != 0} title="Vacantes">
     Quedan
     <%= @remaining_vacancies %>
     disponibles, de un total de
