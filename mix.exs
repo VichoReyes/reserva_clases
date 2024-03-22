@@ -54,6 +54,8 @@ defmodule ReservaClases.MixProject do
       {:tz, "~> 0.26.5"},
       {:phoenix_turnstile, "~> 1.1"},
       {:mox, "~> 1.1"},
+      {:mail, ">= 0.0.0"},
+      {:req, ">= 0.4.0"},
     ]
   end
 

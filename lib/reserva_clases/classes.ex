@@ -4,10 +4,12 @@ defmodule ReservaClases.Classes do
   """
 
   import Ecto.Query, warn: false
+  alias Swoosh.Email
   alias ReservaClases.Repo
 
   alias ReservaClases.Classes.Event
   alias ReservaClases.Classes.EventRepeater
+  alias ReservaClases.Mailer
 
   @doc """
   Returns a map of lists of events belonging to a week.
@@ -210,17 +212,26 @@ defmodule ReservaClases.Classes do
 
   """
   def create_reservation(attrs \\ %{}, event_id) do
-    event = get_event!(event_id, [:reservations])
-
-    case event_accepts_reservations(event) do
-      {false, reason} ->
-        {:error, reason}
-
-      {true, _} ->
-        %Reservation{event_id: event_id}
+    with(
+      event = get_event!(event_id, [:reservations]),
+      :ok <- ensure_event_accepts_reservations(event),
+      {:ok, reservation} <- %Reservation{event_id: event_id}
         |> Reservation.changeset(attrs)
         |> Repo.insert()
+    ) do
+      send_confirmation_email(reservation)
+      {:ok, reservation}
     end
+  end
+
+  defp send_confirmation_email(%Reservation{full_name: name, email: address}) do
+    token = Mailer.GmailToken.get_token()
+    Email.new()
+      |> Email.to({name, address})
+      |> Email.from({"Boulder DAV", "boulder@dav.cl"})
+      |> Email.subject("Reserva realizada")
+      |> Email.text_body("Hola #{name}, tu reserva al DAV fue realizada. Por favor haz la transferencia correspondiente.")
+      |> Mailer.deliver!(access_token: token)
   end
 
   @doc """
@@ -246,6 +257,13 @@ defmodule ReservaClases.Classes do
 
       true ->
         {true, nil}
+    end
+  end
+
+  defp ensure_event_accepts_reservations(event) do
+    case event_accepts_reservations(event) do
+      {true, _} -> :ok
+      {false, reason} -> {:error, reason}
     end
   end
 

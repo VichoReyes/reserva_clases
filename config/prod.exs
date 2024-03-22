@@ -10,6 +10,9 @@ config :reserva_clases, ReservaClasesWeb.Endpoint, cache_static_manifest: "priv/
 # Configures Swoosh API Client
 config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: ReservaClases.Finch
 
+config :reserva_clases, ReservaClases.Mailer,
+  adapter: Swoosh.Adapters.Gmail
+
 # Disable Swoosh Local Memory Storage
 config :swoosh, local: false
 

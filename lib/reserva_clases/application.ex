@@ -20,7 +20,8 @@ defmodule ReservaClases.Application do
       ReservaClasesWeb.Endpoint,
       # Start a worker by calling: ReservaClases.Worker.start_link(arg)
       # {ReservaClases.Worker, arg}
-      ReservaClases.Classes.EventRepeater
+      ReservaClases.Classes.EventRepeater,
+      ReservaClases.Mailer.GmailToken,
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
