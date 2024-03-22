@@ -20,6 +20,9 @@ if System.get_env("PHX_SERVER") do
   config :reserva_clases, ReservaClasesWeb.Endpoint, server: true
 end
 
+config :reserva_clases,
+  refresh_gmail: config_env() == :prod || System.get_env("DBG_REFRESH_GMAIL")
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
@@ -65,8 +68,7 @@ if config_env() == :prod do
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
       port: port
     ],
-    secret_key_base: secret_key_base,
-    refresh_gmail: config_env() == :prod || System.get_env("DBG_REFRESH_GMAIL")
+    secret_key_base: secret_key_base
 
   # ## SSL Support
   #
