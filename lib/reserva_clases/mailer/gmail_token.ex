@@ -1,5 +1,4 @@
 defmodule ReservaClases.Mailer.GmailToken do
-  require Logger
   use GenServer
 
   @token_url "https://oauth2.googleapis.com/token"
@@ -43,11 +42,9 @@ defmodule ReservaClases.Mailer.GmailToken do
 
       %{"access_token" => access_token, "expires_in" => expiry_seconds} = response
       expire_time = DateTime.add(DateTime.utc_now(), expiry_seconds, :second)
-      Logger.info("returning real google token")
       {access_token, expire_time}
     else
       expire_time = DateTime.add(DateTime.utc_now(), 3600, :second)
-      Logger.info("returning fake google token")
       {"FAKE_GMAIL_ACCESS_TOKEN", expire_time}
     end
   end
