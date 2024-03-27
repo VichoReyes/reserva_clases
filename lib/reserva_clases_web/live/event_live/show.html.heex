@@ -62,7 +62,7 @@
   <:action :let={reservation}>
     <.link
       :if={@current_administrator}
-      phx-click={JS.push("delete", value: %{id: reservation.id}) |> hide("##{reservation.id}")}
+      phx-click={JS.push("delete_reservation", value: %{id: reservation.id}) |> hide("##{reservation.id}")}
       data-confirm="Eliminar esta reserva?"
     >
       Eliminar

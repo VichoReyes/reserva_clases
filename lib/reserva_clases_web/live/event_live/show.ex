@@ -35,4 +35,17 @@ defmodule ReservaClasesWeb.EventLive.Show do
   defp page_title(:show, %Event{title: title}), do: "#{title}"
   defp page_title(:edit, %Event{title: title}), do: "Editando #{title}"
   defp page_title(:new_reservation, %Event{title: title}), do: "Nueva reserva en #{title}"
+
+  @impl true
+  def handle_event("delete_reservation", %{"id" => id}, socket) do
+    if !socket.assigns.current_administrator do
+      raise "Unauthorized"
+    end
+    reservation = Classes.get_reservation!(id)
+    event_id = reservation.event_id
+    {:ok, _} = Classes.delete_reservation(reservation)
+    updated_event = Classes.get_event!(event_id, [:reservations])
+
+    {:noreply, assign(socket, :event, updated_event)}
+  end
 end
