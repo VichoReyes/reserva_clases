@@ -5,13 +5,12 @@ defmodule ReservaClasesWeb.AdministratorLoginLive do
     ~H"""
     <div class="mx-auto max-w-sm">
       <.header class="text-center">
-        Sign in to account
+        Inicia sesión de administrador
         <:subtitle>
-          Don't have an account?
-          <.link navigate={~p"/administrators/register"} class="font-semibold text-brand hover:underline">
-            Sign up
+          Si no eres administrador, probablemente buscas la
+          <.link href={~p"/events"} class="font-semibold text-brand hover:underline">
+          Lista de Clases
           </.link>
-          for an account now.
         </:subtitle>
       </.header>
 
@@ -20,9 +19,9 @@ defmodule ReservaClasesWeb.AdministratorLoginLive do
         <.input field={@form[:password]} type="password" label="Password" required />
 
         <:actions>
-          <.input field={@form[:remember_me]} type="checkbox" label="Keep me logged in" />
+          <.input field={@form[:remember_me]} type="checkbox" label="Mantener la sesión iniciada" />
           <.link href={~p"/administrators/reset_password"} class="text-sm font-semibold">
-            Forgot your password?
+            Olvidaste tu contraseña?
           </.link>
         </:actions>
         <:actions>
