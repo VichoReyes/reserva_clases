@@ -31,7 +31,7 @@
   <:item title="Vacantes">
     <%= if @event.total_vacancies != 0 do %>
       Quedan
-      <%= @remaining_vacancies %>
+      <%= @event.total_vacancies - length(@event.reservations) %>
       disponibles, de un total de
       <%= @event.total_vacancies %>
     <% else %>
