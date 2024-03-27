@@ -219,30 +219,30 @@ defmodule ReservaClases.Classes do
         |> Reservation.changeset(attrs)
         |> Repo.insert()
     ) do
-      send_confirmation_email(reservation)
+      send_confirmation_email(reservation, event)
       {:ok, reservation}
     end
   end
 
-  defp send_confirmation_email(%Reservation{} = reservation) do
+  defp send_confirmation_email(%Reservation{} = reservation, event) do
     token = Mailer.GmailToken.get_token()
     Email.new()
       |> Email.to({reservation.full_name, reservation.email})
       |> Email.from({"Boulder DAV", "boulder@dav.cl"})
       |> Email.subject("Reserva realizada")
-      |> confirmation_email_contents(reservation)
+      |> confirmation_email_contents(reservation, event)
       |> Mailer.deliver!(access_token: token)
   end
 
-  defp confirmation_email_contents(email, reservation) do
+  defp confirmation_email_contents(email, reservation, event) do
     Email.text_body(
       email,
       """
       Hola #{reservation.full_name},
 
-      Tu reserva a "#{reservation.event.title}" fue realizada.
+      Tu reserva a "#{event.title}" fue realizada.
 
-      #{reservation.event.description}
+      #{event.description}
 
       Saludos
       """
