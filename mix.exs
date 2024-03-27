@@ -56,6 +56,7 @@ defmodule ReservaClases.MixProject do
       {:mox, "~> 1.1"},
       {:mail, ">= 0.0.0"},
       {:req, ">= 0.4.0"},
+      {:ecto_psql_extras, ">= 0.7.15"},
     ]
   end
 
