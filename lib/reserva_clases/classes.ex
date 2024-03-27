@@ -224,14 +224,29 @@ defmodule ReservaClases.Classes do
     end
   end
 
-  defp send_confirmation_email(%Reservation{full_name: name, email: address}) do
+  defp send_confirmation_email(%Reservation{} = reservation) do
     token = Mailer.GmailToken.get_token()
     Email.new()
-      |> Email.to({name, address})
+      |> Email.to({reservation.full_name, reservation.email})
       |> Email.from({"Boulder DAV", "boulder@dav.cl"})
       |> Email.subject("Reserva realizada")
-      |> Email.text_body("Hola #{name}, tu reserva al DAV fue realizada. Por favor haz la transferencia correspondiente.")
+      |> confirmation_email_contents(reservation)
       |> Mailer.deliver!(access_token: token)
+  end
+
+  defp confirmation_email_contents(email, reservation) do
+    Email.text_body(
+      email,
+      """
+      Hola #{reservation.full_name},
+
+      Tu reserva a "#{reservation.event.title}" fue realizada.
+
+      #{reservation.event.description}
+
+      Saludos
+      """
+    )
   end
 
   @doc """
