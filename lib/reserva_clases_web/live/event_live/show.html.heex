@@ -23,7 +23,7 @@
 <.list>
   <:item title="Description">
     <%= if @event.description do %>
-      <%= @event.description %>
+      <%= Phoenix.HTML.Format.text_to_html @event.description %>
     <% else %>
       <span class="text-gray-500">(Sin descripción)</span>
     <% end %>

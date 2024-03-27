@@ -20,7 +20,7 @@ defmodule ReservaClasesWeb.EventLive.FormComponent do
       >
         <.input field={@form[:title]} type="text" label="Nombre" />
         <.input field={@form[:starts_at]} type="datetime-local" label="Fecha" />
-        <.input field={@form[:description]} type="text" label="Descripción" />
+        <.input field={@form[:description]} type="textarea" label="Descripción" />
         <div>
           <.input field={@form[:total_vacancies]} type="number" label="Cupos totales" />
           <p class="flex gap-1 text-sm leading-6 text-zinc-600">
