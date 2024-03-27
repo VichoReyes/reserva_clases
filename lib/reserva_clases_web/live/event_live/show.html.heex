@@ -1,8 +1,5 @@
 <.header>
   <%= @event.title %>
-  <:subtitle>
-    <%= strftime(@event.starts_at, "%A %d de %B a las %I:%M%P") %>
-  </:subtitle>
   <:actions>
     <.link :if={@current_administrator} patch={~p"/events/#{@event}/show/edit"} phx-click={JS.push_focus()}>
       <.button>Editar clase</.button>
@@ -20,13 +17,21 @@
   </:actions>
 </.header>
 
+<%= if @event.description do %>
+  <div class="prose">
+    <%= Phoenix.HTML.Format.text_to_html @event.description %>
+  </div>
+<% else %>
+  <span class="text-gray-500">(Sin descripción)</span>
+<% end %>
+
+
 <.list>
-  <:item title="Description">
-    <%= if @event.description do %>
-      <%= Phoenix.HTML.Format.text_to_html @event.description %>
-    <% else %>
-      <span class="text-gray-500">(Sin descripción)</span>
-    <% end %>
+  <:item title="Fecha">
+    <%= strftime(@event.starts_at, "%A %d de %B") %>
+  </:item>
+  <:item title="Hora de inicio">
+    <%= strftime(@event.starts_at, "%I:%M%P") %>
   </:item>
   <:item title="Vacantes">
     <%= if @event.total_vacancies != 0 do %>
