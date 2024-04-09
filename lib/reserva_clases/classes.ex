@@ -4,6 +4,7 @@ defmodule ReservaClases.Classes do
   """
 
   import Ecto.Query, warn: false
+  import ReservaClases.Calendar
   alias Swoosh.Email
   alias ReservaClases.Repo
 
@@ -241,6 +242,8 @@ defmodule ReservaClases.Classes do
       Hola #{reservation.full_name},
 
       Tu reserva a "#{event.title}" fue realizada.
+
+      Recuerda venir el #{strftime(event.starts_at, "%d de %B a las %H:%M")}.
 
       #{event.description}
 
