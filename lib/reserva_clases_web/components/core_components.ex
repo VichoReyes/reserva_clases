@@ -467,7 +467,7 @@ defmodule ReservaClasesWeb.CoreComponents do
       end
 
     ~H"""
-    <div class="overflow-y-auto px-4 sm:overflow-visible sm:px-0">
+    <div class="h-fit px-4 sm:overflow-visible sm:px-0">
       <table class="mt-11 w-full">
         <thead class="text-sm text-left leading-6 text-zinc-500">
           <tr>
