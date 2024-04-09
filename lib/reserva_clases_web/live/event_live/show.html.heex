@@ -31,7 +31,7 @@
     <%= strftime(@event.starts_at, "%A %d de %B") %>
   </:item>
   <:item title="Hora de inicio">
-    <%= strftime(@event.starts_at, "%I:%M%P") %>
+    <%= strftime(@event.starts_at, "%H:%M") %>
   </:item>
   <:item title="Vacantes">
     <%= if @event.total_vacancies != 0 do %>

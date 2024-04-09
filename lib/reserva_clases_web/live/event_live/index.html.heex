@@ -40,7 +40,7 @@
         row_id={fn event -> "events-#{event.id}" end}
       >
         <:col :let={event} label="Título"><%= event.title %></:col>
-        <:col :let={event} label="Hora"><%= strftime(event.starts_at, "%I:%M%P") %></:col>
+        <:col :let={event} label="Hora"><%= strftime(event.starts_at, "%H:%M") %></:col>
         <:col :let={event} label="Cupos">
           <%= if event.total_vacancies != 0 do %>
             <%= event.total_vacancies - event.reservations_count %>
