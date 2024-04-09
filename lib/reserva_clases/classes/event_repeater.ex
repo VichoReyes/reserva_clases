@@ -83,8 +83,8 @@ defmodule ReservaClases.Classes.EventRepeater do
 
   def handle_info(:update_repeats, _state) do
     from = Date.utc_today() |> Date.add(-1) |> NaiveDateTime.new!(~T[00:00:00])
-    # 3 weeks
-    to = Date.utc_today() |> Date.add(21) |> NaiveDateTime.new!(~T[23:59:59])
+    # 8 weeks
+    to = Date.utc_today() |> Date.add(56) |> NaiveDateTime.new!(~T[23:59:59])
 
     from(e in Event,
       where: e.repeat_weekly == true and e.starts_at >= ^from and e.starts_at <= ^to
@@ -99,7 +99,7 @@ defmodule ReservaClases.Classes.EventRepeater do
   defp generate_checking_date(%Event{starts_at: starts_at, repeat_weekly: true} = event) do
     # just in case someone adds an event very far in the past
     from = Date.utc_today() |> Date.add(-366)
-    to = Date.utc_today() |> Date.add(21)
+    to = Date.utc_today() |> Date.add(56)
 
     if Date.compare(starts_at, from) != :lt and Date.compare(starts_at, to) != :gt do
       generate_repeats_helper(event)
