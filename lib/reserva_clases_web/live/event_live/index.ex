@@ -3,6 +3,7 @@ defmodule ReservaClasesWeb.EventLive.Index do
 
   alias ReservaClases.Classes
   alias ReservaClases.Classes.Event
+  import ReservaClases.Calendar
 
   @impl true
   def mount(_params, _session, socket) do
@@ -83,15 +84,5 @@ defmodule ReservaClasesWeb.EventLive.Index do
       |> Enum.reject(fn {_, daylist} -> Enum.empty?(daylist) end)
 
     {:noreply, assign(socket, :events, new_events)}
-  end
-
-  defp strftime(time, format) do
-    month_names = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"}
-    day_of_week_names = {"Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"}
-    Calendar.strftime(
-      time,
-      format,
-      month_names: &elem(month_names, &1 - 1),
-      day_of_week_names: &elem(day_of_week_names, &1 - 1))
   end
 end
