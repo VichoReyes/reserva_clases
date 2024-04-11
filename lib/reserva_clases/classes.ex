@@ -247,6 +247,8 @@ defmodule ReservaClases.Classes do
 
       #{event.description}
 
+      Si quieres cancelar tu reserva, avisar a administrador@dav.cl
+
       Saludos
       """
     )
