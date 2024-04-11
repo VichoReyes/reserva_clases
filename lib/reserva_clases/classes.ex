@@ -259,18 +259,21 @@ defmodule ReservaClases.Classes do
   returns {false, reason} otherwise.
   """
   def event_accepts_reservations(event) do
-    limit_date =
+    now_in_stgo =
       DateTime.now!("America/Santiago")
       |> DateTime.to_naive()
-      |> NaiveDateTime.add(8, :day)
+
+    limit_date =  # date from which you can make reservations
+      event.starts_at
+      |> NaiveDateTime.add(-8, :day)
       |> NaiveDateTime.beginning_of_day()
 
     cond do
       event.total_vacancies == 0 ->
         {false, "Esta clase no acepta reservas por esta plataforma"}
 
-      NaiveDateTime.after?(event.starts_at, limit_date) ->
-        {false, "Todavía no se puede reservar para esta clase"}
+      NaiveDateTime.before?(now_in_stgo, limit_date) ->
+        {false, "Se podrá reservar desde el #{strftime(limit_date, "%d de %B")}"}
 
       length(event.reservations) >= event.total_vacancies ->
         {false, "Esta clase ya está llena"}
