@@ -194,6 +194,15 @@ defmodule ReservaClases.ClassesTest do
       assert message =~ ~r/se podrá reservar desde el [0-9]+ de/i
     end
 
+    test "create_reservation/2 doesn't allow reserving too late" do
+      past_date = NaiveDateTime.utc_now() |> NaiveDateTime.add(-1, :day)
+      event = event_fixture(%{starts_at: past_date})
+
+      assert {:error, message} =
+                 Classes.create_reservation(@valid_attrs, event.id)
+      assert message =~ ~r/es muy tarde para reservar/i
+    end
+
     test "create_reservation/2 with invalid data returns error changeset" do
       event = event_fixture()
       assert {:error, %Ecto.Changeset{}} = Classes.create_reservation(@invalid_attrs, event.id)
