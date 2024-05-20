@@ -43,8 +43,8 @@
         <:col :let={event} label="Hora"><%= strftime(event.starts_at, "%H:%M") %></:col>
         <:col :let={event} label="Cupos">
           <%= if event.total_vacancies != 0 do %>
-            <span title={"#{event.reservations_count} de #{event.total_vacancies} ocupados"}>
-              <%= event.reservations_count %>
+            <span title={"#{event.total_vacancies - event.reservations_count} de #{event.total_vacancies} cupos libres"}>
+              <%= event.total_vacancies - event.reservations_count %>
               /
               <%= event.total_vacancies %>
             </span>
