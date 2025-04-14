@@ -20,7 +20,7 @@ defmodule ReservaClasesWeb.AdministratorForgotPasswordLive do
         </:actions>
       </.simple_form>
       <p class="text-center text-sm mt-4">
-        <.link href={~p"/administrators/register"}>Register</.link>
+        Registering disabled
         | <.link href={~p"/administrators/log_in"}>Log in</.link>
       </p>
     </div>
