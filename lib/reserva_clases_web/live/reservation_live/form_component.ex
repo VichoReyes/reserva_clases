@@ -100,6 +100,14 @@ defmodule ReservaClasesWeb.ReservationLive.FormComponent do
          |> put_flash(:info, "Reserva creada")
          |> push_patch(to: socket.assigns.patch)}
 
+      {:ok, reservation, :email_failed} ->
+        notify_parent({:saved, reservation})
+
+        {:noreply,
+         socket
+         |> put_flash(:info, "Reserva creada, pero hubo un error al enviar el email de confirmación. Tu reserva está guardada correctamente.")
+         |> push_patch(to: socket.assigns.patch)}
+
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
 

@@ -82,5 +82,28 @@ defmodule ReservaClasesWeb.ReservationLiveTest do
       assert index_live |> element("#reservations-#{reservation.id} a", "Eliminar") |> render_click()
       refute has_element?(index_live, "#reservations-#{reservation.id}")
     end
+
+    test "creates reservation successfully in test environment", %{conn: conn} do
+      stub(TurnstileMock, :refresh, fn socket -> socket end)
+      stub(TurnstileMock, :verify, fn _values -> {:ok, %{}} end)
+
+      event = event_fixture()
+      {:ok, event_live, _html} = live(conn, ~p"/events/#{event.id}")
+
+      assert event_live |> element("a", "Reservar") |> render_click() =~ "Reservar"
+      assert_patch(event_live, ~p"/events/#{event.id}/new_reservation")
+
+      # Submit the form
+      # In test environment with Swoosh.Adapters.Test, email sending succeeds
+      assert event_live
+             |> form("#reservation-form", reservation: @create_attrs)
+             |> render_submit()
+
+      assert_patch(event_live, ~p"/events/#{event.id}")
+
+      # Verify success message is shown
+      html = render(event_live)
+      assert html =~ "Reserva creada"
+    end
   end
 end

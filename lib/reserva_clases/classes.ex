@@ -212,7 +212,7 @@ defmodule ReservaClases.Classes do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_reservation(attrs \\ %{}, event_id) do
+  def create_reservation(attrs \\ %{}, event_id, opts \\ []) do
     with(
       event = get_event!(event_id, [:reservations]),
       :ok <- ensure_event_accepts_reservations(event),
@@ -220,19 +220,35 @@ defmodule ReservaClases.Classes do
         |> Reservation.changeset(attrs)
         |> Repo.insert()
     ) do
-      send_confirmation_email(reservation, event)
-      {:ok, reservation}
+      email_sender = Keyword.get(opts, :email_sender, &send_confirmation_email/2)
+
+      case email_sender.(reservation, event) do
+        :ok ->
+          {:ok, reservation}
+        {:error, _reason} ->
+          # Reservation was created but email failed
+          {:ok, reservation, :email_failed}
+      end
     end
   end
 
   defp send_confirmation_email(%Reservation{} = reservation, event) do
-    token = Mailer.GmailToken.get_token()
-    Email.new()
-      |> Email.to({reservation.full_name, reservation.email})
-      |> Email.from({"Boulder DAV", "boulder@dav.cl"})
-      |> Email.subject("Reserva realizada")
-      |> confirmation_email_contents(reservation, event)
-      |> Mailer.deliver!(access_token: token)
+    try do
+      token = Mailer.GmailToken.get_token()
+      Email.new()
+        |> Email.to({reservation.full_name, reservation.email})
+        |> Email.from({"Boulder DAV", "boulder@dav.cl"})
+        |> Email.subject("Reserva realizada")
+        |> confirmation_email_contents(reservation, event)
+        |> Mailer.deliver!(access_token: token)
+
+      :ok
+    rescue
+      error ->
+        require Logger
+        Logger.error("Failed to send confirmation email: #{inspect(error)}")
+        {:error, error}
+    end
   end
 
   defp confirmation_email_contents(email, reservation, event) do
