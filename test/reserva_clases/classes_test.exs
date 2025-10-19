@@ -194,6 +194,15 @@ defmodule ReservaClases.ClassesTest do
       assert message =~ ~r/se podrá reservar desde el [0-9]+ de/i
     end
 
+    test "create_reservation/2 doesn't allow reserving too late" do
+      past_date = NaiveDateTime.utc_now() |> NaiveDateTime.add(-1, :day)
+      event = event_fixture(%{starts_at: past_date})
+
+      assert {:error, message} =
+                 Classes.create_reservation(@valid_attrs, event.id)
+      assert message =~ ~r/es muy tarde para reservar/i
+    end
+
     test "create_reservation/2 with invalid data returns error changeset" do
       event = event_fixture()
       assert {:error, %Ecto.Changeset{}} = Classes.create_reservation(@invalid_attrs, event.id)
@@ -231,6 +240,30 @@ defmodule ReservaClases.ClassesTest do
     test "change_reservation/1 returns a reservation changeset" do
       reservation = reservation_fixture()
       assert %Ecto.Changeset{} = Classes.change_reservation(reservation)
+    end
+
+    test "create_reservation/2 returns {:ok, reservation, :email_failed} when email sending fails" do
+      event = event_fixture()
+
+      # Create a failing email sender function
+      failing_email_sender = fn _reservation, _event ->
+        {:error, "Email service unavailable"}
+      end
+
+      # Call create_reservation with the failing email sender
+      assert {:ok, %Reservation{} = reservation, :email_failed} =
+               Classes.create_reservation(
+                 @valid_attrs,
+                 event.id,
+                 email_sender: failing_email_sender
+               )
+
+      # Verify reservation was still created despite email failure
+      assert reservation.email == "some@email.com"
+      assert reservation.full_name == "some full_name"
+
+      # Verify reservation exists in database
+      assert Classes.get_reservation!(reservation.id)
     end
   end
 end

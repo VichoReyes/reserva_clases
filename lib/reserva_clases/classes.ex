@@ -212,7 +212,7 @@ defmodule ReservaClases.Classes do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_reservation(attrs \\ %{}, event_id) do
+  def create_reservation(attrs \\ %{}, event_id, opts \\ []) do
     with(
       event = get_event!(event_id, [:reservations]),
       :ok <- ensure_event_accepts_reservations(event),
@@ -220,19 +220,35 @@ defmodule ReservaClases.Classes do
         |> Reservation.changeset(attrs)
         |> Repo.insert()
     ) do
-      send_confirmation_email(reservation, event)
-      {:ok, reservation}
+      email_sender = Keyword.get(opts, :email_sender, &send_confirmation_email/2)
+
+      case email_sender.(reservation, event) do
+        :ok ->
+          {:ok, reservation}
+        {:error, _reason} ->
+          # Reservation was created but email failed
+          {:ok, reservation, :email_failed}
+      end
     end
   end
 
   defp send_confirmation_email(%Reservation{} = reservation, event) do
-    token = Mailer.GmailToken.get_token()
-    Email.new()
-      |> Email.to({reservation.full_name, reservation.email})
-      |> Email.from({"Boulder DAV", "boulder@dav.cl"})
-      |> Email.subject("Reserva realizada")
-      |> confirmation_email_contents(reservation, event)
-      |> Mailer.deliver!(access_token: token)
+    try do
+      token = Mailer.GmailToken.get_token()
+      Email.new()
+        |> Email.to({reservation.full_name, reservation.email})
+        |> Email.from({"Boulder DAV", "boulder@dav.cl"})
+        |> Email.subject("Reserva realizada")
+        |> confirmation_email_contents(reservation, event)
+        |> Mailer.deliver!(access_token: token)
+
+      :ok
+    rescue
+      error ->
+        require Logger
+        Logger.error("Failed to send confirmation email: #{inspect(error)}")
+        {:error, error}
+    end
   end
 
   defp confirmation_email_contents(email, reservation, event) do
@@ -263,17 +279,24 @@ defmodule ReservaClases.Classes do
       DateTime.now!("America/Santiago")
       |> DateTime.to_naive()
 
-    limit_date =  # date from which you can make reservations
+    earlier_limit =
       event.starts_at
       |> NaiveDateTime.add(-8, :day)
       |> NaiveDateTime.beginning_of_day()
+
+    late_limit =
+      event.starts_at
+      |> NaiveDateTime.add(30, :minute)
 
     cond do
       event.total_vacancies == 0 ->
         {false, "Esta clase no acepta reservas por esta plataforma"}
 
-      NaiveDateTime.before?(now_in_stgo, limit_date) ->
-        {false, "Se podrá reservar desde el #{strftime(limit_date, "%d de %B")}"}
+      NaiveDateTime.before?(now_in_stgo, earlier_limit) ->
+        {false, "Se podrá reservar desde el #{strftime(earlier_limit, "%d de %B")}"}
+
+      NaiveDateTime.before?(late_limit, now_in_stgo) ->
+        {false, "Ya es muy tarde para reservar"}
 
       length(event.reservations) >= event.total_vacancies ->
         {false, "Esta clase ya está llena"}
