@@ -243,11 +243,11 @@ defmodule ReservaClases.Classes do
         |> Mailer.deliver!(access_token: token)
 
       :ok
-    rescue
-      error ->
+    catch
+      kind, reason ->
         require Logger
-        Logger.error("Failed to send confirmation email: #{inspect(error)}")
-        {:error, error}
+        Logger.error("Failed to send confirmation email (#{kind}): #{inspect(reason)}")
+        {:error, reason}
     end
   end
 
