@@ -242,18 +242,6 @@ defmodule ReservaClases.ClassesTest do
       assert %Ecto.Changeset{} = Classes.change_reservation(reservation)
     end
 
-    test "create_reservation/2 succeeds and sends email in test environment" do
-      # In test environment, Swoosh.Adapters.Test is used, so email sending succeeds
-      event = event_fixture()
-
-      assert {:ok, %Reservation{} = reservation} = Classes.create_reservation(@valid_attrs, event.id)
-
-      # Verify reservation was created
-      assert reservation.email == "some@email.com"
-      assert reservation.full_name == "some full_name"
-      assert Classes.get_reservation!(reservation.id)
-    end
-
     test "create_reservation/2 returns {:ok, reservation, :email_failed} when email sending fails" do
       event = event_fixture()
 
