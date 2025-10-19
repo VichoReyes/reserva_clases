@@ -7,14 +7,19 @@ defmodule ReservaClasesWeb.AdministratorLoginLive do
       <.header class="text-center">
         Inicia sesión de administrador
         <:subtitle>
-          Si no eres administrador, probablemente buscas la
+          Si solo quieres reservar, buscas la
           <.link href={~p"/events"} class="font-semibold text-brand hover:underline">
-          Lista de Clases
+            Lista de Clases
           </.link>
         </:subtitle>
       </.header>
 
-      <.simple_form for={@form} id="login_form" action={~p"/administrators/log_in"} phx-update="ignore">
+      <.simple_form
+        for={@form}
+        id="login_form"
+        action={~p"/administrators/log_in"}
+        phx-update="ignore"
+      >
         <.input field={@form[:email]} type="email" label="Email" required />
         <.input field={@form[:password]} type="password" label="Password" required />
 
